@@ -1,0 +1,2588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Device Web APIs — May 2026</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --green: #3fb950;
+    --blue: #58a6ff;
+    --orange: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --cyan: #76e3ea;
+    --yellow: #e3b341;
+    --pink: #f778ba;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  header h1 { font-size: 18px; font-weight: 700; color: var(--blue); }
+  header p { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .stats { display: flex; gap: 16px; margin-top: 10px; }
+  .stat { font-size: 12px; }
+  .stat span { color: var(--green); font-weight: 600; }
+  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .category { margin-bottom: 32px; }
+  .category-title {
+    font-size: 13px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--muted); margin-bottom: 12px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .category-title .badge {
+    background: var(--surface2); color: var(--muted);
+    font-size: 11px; padding: 1px 6px; border-radius: 10px; font-weight: 400;
+    text-transform: none; letter-spacing: 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 12px;
+  }
+  .api-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+  .api-card:hover { border-color: #444c56; }
+  .api-card.supported { border-left: 3px solid var(--green); }
+  .api-card.partial { border-left: 3px solid var(--orange); }
+  .api-card.unsupported { border-left: 3px solid var(--red); }
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+  .api-name { font-weight: 600; font-size: 14px; }
+  .support-badge {
+    font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600;
+    white-space: nowrap; margin-left: 8px; flex-shrink: 0;
+  }
+  .support-badge.yes { background: rgba(63,185,80,0.15); color: var(--green); }
+  .support-badge.partial { background: rgba(210,153,34,0.15); color: var(--orange); }
+  .support-badge.no { background: rgba(248,81,73,0.15); color: var(--red); }
+  .api-desc { color: var(--muted); font-size: 12px; margin-bottom: 10px; line-height: 1.4; }
+  .btn-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  button {
+    background: var(--surface2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 5px;
+    padding: 5px 12px; font-size: 12px; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    font-family: inherit;
+  }
+  button:hover { background: #2d333b; border-color: #8b949e; }
+  button.primary { background: rgba(88,166,255,0.1); border-color: var(--blue); color: var(--blue); }
+  button.primary:hover { background: rgba(88,166,255,0.2); }
+  button.danger { background: rgba(248,81,73,0.1); border-color: var(--red); color: var(--red); }
+  button.stop { background: rgba(248,81,73,0.1); border-color: var(--red); color: var(--red); }
+  .result {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+    padding: 6px 10px; font-size: 11px; font-family: 'Courier New', monospace;
+    min-height: 28px; color: var(--muted); word-break: break-all; line-height: 1.4;
+    max-height: 100px; overflow-y: auto;
+  }
+  .result.ok { color: var(--green); }
+  .result.err { color: var(--red); }
+  .result.info { color: var(--cyan); }
+  .result.warn { color: var(--orange); }
+  .result video, .result canvas, .result img {
+    max-width: 100%; max-height: 80px; display: block; margin-top: 4px;
+  }
+  input[type="text"], input[type="number"], select, textarea {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+    padding: 4px 8px; color: var(--text); font-size: 12px; font-family: inherit;
+    width: 100%; margin-bottom: 6px;
+  }
+  input[type="range"] { width: 100%; margin-bottom: 6px; }
+  .search-bar {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 12px; color: var(--text); font-size: 13px; font-family: inherit;
+    width: 100%; margin-top: 10px;
+  }
+  .toc {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px; margin-bottom: 24px;
+  }
+  .toc-title { font-weight: 700; margin-bottom: 10px; color: var(--blue); }
+  .toc-links { display: flex; flex-wrap: wrap; gap: 8px; }
+  .toc-links a {
+    color: var(--muted); font-size: 12px; text-decoration: none;
+    background: var(--surface2); padding: 3px 10px; border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .toc-links a:hover { color: var(--blue); border-color: var(--blue); }
+  .legend { display: flex; gap: 16px; margin-top: 8px; font-size: 11px; color: var(--muted); }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .dot.g { background: var(--green); }
+  .dot.o { background: var(--orange); }
+  .dot.r { background: var(--red); }
+  #floatLog {
+    position: fixed; bottom: 16px; right: 16px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px;
+    font-size: 11px; font-family: monospace; color: var(--cyan);
+    max-width: 320px; max-height: 120px; overflow-y: auto; z-index: 200;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔌 All Device Web APIs — May 2026</h1>
+  <p>Every Web API that performs actions on or reads from the physical device. Click any button to trigger the API.</p>
+  <div class="stats">
+    <div class="stat">Total APIs: <span id="totalCount">—</span></div>
+    <div class="stat">Supported in this browser: <span id="supportedCount">—</span></div>
+    <div class="stat">Partial: <span id="partialCount">—</span></div>
+    <div class="stat">Not supported: <span id="unsupportedCount">—</span></div>
+  </div>
+  <div class="legend" style="margin-top:10px">
+    <span><span class="dot g"></span> Fully Supported</span>
+    <span><span class="dot o"></span> Partial / Needs HTTPS/Permissions</span>
+    <span><span class="dot r"></span> Not in this browser</span>
+  </div>
+  <input type="text" class="search-bar" id="searchBar" placeholder="🔍  Search APIs..." oninput="filterAPIs(this.value)">
+</header>
+
+<main>
+
+<!-- Table of Contents -->
+<div class="toc">
+  <div class="toc-title">Categories</div>
+  <div class="toc-links">
+    <a href="#display">Display & Screen</a>
+    <a href="#audio">Audio & Speech</a>
+    <a href="#sensors">Motion & Sensors</a>
+    <a href="#input">Input Devices</a>
+    <a href="#connectivity">Connectivity</a>
+    <a href="#camera">Camera & Media</a>
+    <a href="#system">System Info</a>
+    <a href="#storage">Storage & Files</a>
+    <a href="#network">Network & Comms</a>
+    <a href="#advanced">Advanced / Experimental</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ DISPLAY & SCREEN ══════ -->
+<div class="category" id="display">
+  <div class="category-title">📺 Display &amp; Screen <span class="badge">8 APIs</span></div>
+  <div class="grid">
+
+    <!-- 1. Fullscreen API -->
+    <div class="api-card" id="card-fullscreen">
+      <div class="card-header">
+        <div class="api-name">Fullscreen API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Makes any element or the page occupy the entire screen. Triggered by user gesture.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testFullscreen()">Request Fullscreen</button>
+        <button onclick="exitFullscreen()">Exit Fullscreen</button>
+      </div>
+      <div class="result" id="r-fullscreen">Waiting…</div>
+    </div>
+
+    <!-- 2. Screen Orientation API -->
+    <div class="api-card" id="card-orientation">
+      <div class="card-header">
+        <div class="api-name">Screen Orientation API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reads and locks screen orientation (portrait/landscape). Lock requires fullscreen.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="readOrientation()">Read Orientation</button>
+        <button onclick="lockOrientation('portrait')">Lock Portrait</button>
+        <button onclick="lockOrientation('landscape')">Lock Landscape</button>
+        <button onclick="screen.orientation.unlock()">Unlock</button>
+      </div>
+      <div class="result" id="r-orientation">Waiting…</div>
+    </div>
+
+    <!-- 3. Screen Wake Lock API -->
+    <div class="api-card" id="card-wakelock">
+      <div class="card-header">
+        <div class="api-name">Screen Wake Lock API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Prevents the screen from dimming or turning off while your app is active.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="requestWakeLock()">Acquire Wake Lock</button>
+        <button class="stop" onclick="releaseWakeLock()">Release</button>
+      </div>
+      <div class="result" id="r-wakelock">Waiting…</div>
+    </div>
+
+    <!-- 4. Page Visibility API -->
+    <div class="api-card" id="card-pagevis">
+      <div class="card-header">
+        <div class="api-name">Page Visibility API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Detects whether the page/tab is currently visible to the user. Fires visibilitychange events.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="checkVisibility()">Check Visibility</button>
+        <button onclick="listenVisibility()">Listen for Changes</button>
+      </div>
+      <div class="result" id="r-pagevis">Waiting…</div>
+    </div>
+
+    <!-- 5. Picture-in-Picture API -->
+    <div class="api-card" id="card-pip">
+      <div class="card-header">
+        <div class="api-name">Picture-in-Picture API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Floats a video in a small overlay window so it stays visible while you use other apps.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="requestPiP()">Enter PiP</button>
+        <button onclick="exitPiP()">Exit PiP</button>
+      </div>
+      <div class="result" id="r-pip">
+        <video id="pipVideo" src="https://www.w3schools.com/html/mov_bbb.mp4" width="120" controls muted></video>
+      </div>
+    </div>
+
+    <!-- 6. Document Picture-in-Picture API -->
+    <div class="api-card" id="card-docpip">
+      <div class="card-header">
+        <div class="api-name">Document Picture-in-Picture API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Opens any HTML content (not just video) in a floating always-on-top window. Chrome 116+.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testDocPiP()">Open Doc PiP Window</button>
+      </div>
+      <div class="result" id="r-docpip">Waiting…</div>
+    </div>
+
+    <!-- 7. Window Management / Multi-Screen API -->
+    <div class="api-card" id="card-multiscreen">
+      <div class="card-header">
+        <div class="api-name">Window Management API (Multi-Screen)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Queries details about all connected screens and opens windows on specific displays.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testScreenDetails()">Get Screen Details</button>
+      </div>
+      <div class="result" id="r-multiscreen">Waiting…</div>
+    </div>
+
+    <!-- 8. Presentation API -->
+    <div class="api-card" id="card-presentation">
+      <div class="card-header">
+        <div class="api-name">Presentation API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Sends content to a second display (TV, projector) via Chromecast or secondary screen.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testPresentation()">Start Presentation</button>
+      </div>
+      <div class="result" id="r-presentation">Waiting…</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ AUDIO & SPEECH ══════ -->
+<div class="category" id="audio">
+  <div class="category-title">🔊 Audio &amp; Speech <span class="badge">6 APIs</span></div>
+  <div class="grid">
+
+    <!-- 9. Web Audio API -->
+    <div class="api-card" id="card-webaudio">
+      <div class="card-header">
+        <div class="api-name">Web Audio API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Creates and plays audio directly on device speakers — oscillators, effects, spatial audio.</div>
+      <input type="range" id="audioFreq" min="100" max="2000" value="440">
+      <div class="btn-row">
+        <button class="primary" onclick="playTone()">Play Tone</button>
+        <button onclick="playBeep()">Beep</button>
+        <button onclick="playSweep()">Frequency Sweep</button>
+        <button onclick="playNoise()">White Noise</button>
+        <button class="stop" onclick="stopAudio()">Stop</button>
+      </div>
+      <div class="result" id="r-webaudio">Waiting… (drag slider to set Hz)</div>
+    </div>
+
+    <!-- 10. Speech Synthesis API -->
+    <div class="api-card" id="card-tts">
+      <div class="card-header">
+        <div class="api-name">Speech Synthesis API (TTS)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Makes the device speak text aloud using the system's text-to-speech engine.</div>
+      <input type="text" id="ttsText" value="Hello! This is your device speaking.">
+      <input type="range" id="ttsRate" min="0.5" max="2" step="0.1" value="1">
+      <div class="btn-row">
+        <button class="primary" onclick="speakText()">Speak</button>
+        <button onclick="listVoices()">List Voices</button>
+        <button class="stop" onclick="speechSynthesis.cancel()">Stop</button>
+      </div>
+      <div class="result" id="r-tts">Waiting…</div>
+    </div>
+
+    <!-- 11. Speech Recognition API -->
+    <div class="api-card" id="card-stt">
+      <div class="card-header">
+        <div class="api-name">Speech Recognition API (STT)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Uses device microphone to convert spoken words to text in real-time (requires mic permission).</div>
+      <div class="btn-row">
+        <button class="primary" onclick="startSTT()">Start Listening</button>
+        <button class="stop" onclick="stopSTT()">Stop</button>
+      </div>
+      <div class="result" id="r-stt">Waiting…</div>
+    </div>
+
+    <!-- 12. MediaSession API -->
+    <div class="api-card" id="card-mediasession">
+      <div class="card-header">
+        <div class="api-name">Media Session API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Controls what appears on OS media controls (lock screen, notification area) — title, artist, artwork, transport controls.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="setMediaSession()">Set Media Metadata</button>
+        <button onclick="clearMediaSession()">Clear</button>
+      </div>
+      <div class="result" id="r-mediasession">Waiting…</div>
+    </div>
+
+    <!-- 13. Remote Playback API -->
+    <div class="api-card" id="card-remoteplay">
+      <div class="card-header">
+        <div class="api-name">Remote Playback API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Streams media to a remote device (Chromecast, Apple TV, etc.) via the browser.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testRemotePlayback()">Prompt Remote Devices</button>
+      </div>
+      <div class="result" id="r-remoteplay">Waiting…</div>
+    </div>
+
+    <!-- 14. Web MIDI API -->
+    <div class="api-card" id="card-midi">
+      <div class="card-header">
+        <div class="api-name">Web MIDI API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Connects to MIDI instruments and devices. Send/receive MIDI messages over USB or Bluetooth MIDI.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testMIDI()">Request MIDI Access</button>
+      </div>
+      <div class="result" id="r-midi">Waiting…</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ MOTION & SENSORS ══════ -->
+<div class="category" id="sensors">
+  <div class="category-title">📡 Motion &amp; Sensors <span class="badge">12 APIs</span></div>
+  <div class="grid">
+
+    <!-- 15. Vibration API -->
+    <div class="api-card" id="card-vibration">
+      <div class="card-header">
+        <div class="api-name">Vibration API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Makes the device vibrate (mobile devices only). Supports patterns of buzz/pause sequences.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="navigator.vibrate(300); res('r-vibration','Vibrated 300ms','ok')">Vibrate 300ms</button>
+        <button onclick="navigator.vibrate([100,50,100,50,300]); res('r-vibration','Pattern: 100-50-100-50-300','ok')">Pattern</button>
+        <button onclick="navigator.vibrate([500,200,500]); res('r-vibration','SOS pattern','ok')">SOS</button>
+        <button class="stop" onclick="navigator.vibrate(0); res('r-vibration','Stopped','warn')">Stop</button>
+      </div>
+      <div class="result" id="r-vibration">Waiting…</div>
+    </div>
+
+    <!-- 16. DeviceOrientation Event -->
+    <div class="api-card" id="card-devorientation">
+      <div class="card-header">
+        <div class="api-name">DeviceOrientation Event</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reads device tilt angle from the gyroscope: alpha (compass), beta (front-back tilt), gamma (left-right tilt).</div>
+      <div class="btn-row">
+        <button class="primary" onclick="startDeviceOrientation()">Start Listening</button>
+        <button class="stop" onclick="stopDeviceOrientation()">Stop</button>
+      </div>
+      <div class="result" id="r-devorientation">Waiting…</div>
+    </div>
+
+    <!-- 17. DeviceMotion Event -->
+    <div class="api-card" id="card-devmotion">
+      <div class="card-header">
+        <div class="api-name">DeviceMotion Event</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reads accelerometer data — acceleration (with/without gravity) and rotation rate in real-time.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="startDeviceMotion()">Start Listening</button>
+        <button class="stop" onclick="stopDeviceMotion()">Stop</button>
+      </div>
+      <div class="result" id="r-devmotion">Waiting…</div>
+    </div>
+
+    <!-- 18. Accelerometer (Generic Sensor API) -->
+    <div class="api-card" id="card-accelerometer">
+      <div class="card-header">
+        <div class="api-name">Accelerometer (Generic Sensor)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Low-level Generic Sensor API for accelerometer data. Measures device acceleration including gravity in m/s².</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testAccelerometer()">Start Accelerometer</button>
+        <button class="stop" onclick="stopAccelerometer()">Stop</button>
+      </div>
+      <div class="result" id="r-accelerometer">Waiting…</div>
+    </div>
+
+    <!-- 19. Gyroscope (Generic Sensor API) -->
+    <div class="api-card" id="card-gyroscope">
+      <div class="card-header">
+        <div class="api-name">Gyroscope (Generic Sensor)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reads angular velocity on X, Y, Z axes in rad/s. Requires 'gyroscope' permission policy.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testGyroscope()">Start Gyroscope</button>
+        <button class="stop" onclick="stopGyroscope()">Stop</button>
+      </div>
+      <div class="result" id="r-gyroscope">Waiting…</div>
+    </div>
+
+    <!-- 20. Magnetometer (Generic Sensor API) -->
+    <div class="api-card" id="card-magnetometer">
+      <div class="card-header">
+        <div class="api-name">Magnetometer (Generic Sensor)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reads device compass heading. Measures magnetic field strength on X, Y, Z axes in μT.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testMagnetometer()">Start Magnetometer</button>
+        <button class="stop" onclick="stopMagnetometer()">Stop</button>
+      </div>
+      <div class="result" id="r-magnetometer">Waiting…</div>
+    </div>
+
+    <!-- 21. AbsoluteOrientationSensor -->
+    <div class="api-card" id="card-abssensor">
+      <div class="card-header">
+        <div class="api-name">AbsoluteOrientationSensor</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Fuses accelerometer + gyroscope + magnetometer to give device orientation relative to Earth's coordinate frame (quaternion).</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testAbsOrientation()">Start</button>
+        <button class="stop" onclick="stopAbsOrientation()">Stop</button>
+      </div>
+      <div class="result" id="r-abssensor">Waiting…</div>
+    </div>
+
+    <!-- 22. RelativeOrientationSensor -->
+    <div class="api-card" id="card-relsensor">
+      <div class="card-header">
+        <div class="api-name">RelativeOrientationSensor</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Fuses accelerometer + gyroscope only (no compass) to give orientation relative to the device's initial position.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testRelOrientation()">Start</button>
+        <button class="stop" onclick="stopRelOrientation()">Stop</button>
+      </div>
+      <div class="result" id="r-relsensor">Waiting…</div>
+    </div>
+
+    <!-- 23. LinearAccelerationSensor -->
+    <div class="api-card" id="card-linearacc">
+      <div class="card-header">
+        <div class="api-name">LinearAccelerationSensor</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Acceleration excluding gravity, so shaking the device will register but holding it still will read ~0,0,0.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testLinearAcc()">Start</button>
+        <button class="stop" onclick="stopLinearAcc()">Stop</button>
+      </div>
+      <div class="result" id="r-linearacc">Waiting…</div>
+    </div>
+
+    <!-- 24. GravitySensor -->
+    <div class="api-card" id="card-gravity">
+      <div class="card-header">
+        <div class="api-name">GravitySensor</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reads only the gravity component of acceleration (≈9.8 m/s² distributed across axes based on tilt).</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testGravity()">Start</button>
+        <button class="stop" onclick="stopGravity()">Stop</button>
+      </div>
+      <div class="result" id="r-gravity">Waiting…</div>
+    </div>
+
+    <!-- 25. Ambient Light Sensor -->
+    <div class="api-card" id="card-light">
+      <div class="card-header">
+        <div class="api-name">Ambient Light Sensor</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reads the ambient light level from the device's light sensor in lux. Used for auto-brightness.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testAmbientLight()">Start</button>
+        <button class="stop" onclick="stopAmbientLight()">Stop</button>
+      </div>
+      <div class="result" id="r-light">Waiting…</div>
+    </div>
+
+    <!-- 26. Geolocation API -->
+    <div class="api-card" id="card-geo">
+      <div class="card-header">
+        <div class="api-name">Geolocation API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Gets device GPS coordinates (latitude, longitude, altitude, accuracy). Requires user permission.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="getLocation()">Get Location</button>
+        <button onclick="watchLocation()">Watch (live)</button>
+        <button class="stop" onclick="stopWatchLocation()">Stop Watch</button>
+      </div>
+      <div class="result" id="r-geo">Waiting…</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ INPUT DEVICES ══════ -->
+<div class="category" id="input">
+  <div class="category-title">🕹️ Input Devices <span class="badge">7 APIs</span></div>
+  <div class="grid">
+
+    <!-- 27. Pointer Lock API -->
+    <div class="api-card" id="card-pointerlock">
+      <div class="card-header">
+        <div class="api-name">Pointer Lock API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Captures and hides the mouse cursor, providing raw mouse movement deltas. Used in FPS games.</div>
+      <div id="pointerTarget" style="background:#21262d;padding:12px;text-align:center;border-radius:4px;border:1px dashed #444;margin-bottom:8px;cursor:crosshair;font-size:12px;color:#8b949e">Click here then Request Lock</div>
+      <div class="btn-row">
+        <button class="primary" onclick="requestPointerLock()">Request Pointer Lock</button>
+        <button onclick="document.exitPointerLock()">Release</button>
+      </div>
+      <div class="result" id="r-pointerlock">Waiting…</div>
+    </div>
+
+    <!-- 28. Gamepad API -->
+    <div class="api-card" id="card-gamepad">
+      <div class="card-header">
+        <div class="api-name">Gamepad API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reads input from USB/Bluetooth gamepads (buttons, axes, rumble). Connect a controller and press a button.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="startGamepad()">Start Polling</button>
+        <button onclick="testGamepadRumble()">Rumble</button>
+        <button class="stop" onclick="stopGamepad()">Stop</button>
+      </div>
+      <div class="result" id="r-gamepad">Connect a gamepad and press any button first.</div>
+    </div>
+
+    <!-- 29. Virtual Keyboard API -->
+    <div class="api-card" id="card-vkeyboard">
+      <div class="card-header">
+        <div class="api-name">Virtual Keyboard API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Controls the on-screen virtual keyboard on mobile — show/hide/query geometry. Chrome 94+.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testVirtualKeyboard()">Show Virtual Keyboard</button>
+        <button onclick="hideVirtualKeyboard()">Hide</button>
+        <button onclick="getVKBounds()">Get Bounds</button>
+      </div>
+      <div class="result" id="r-vkeyboard">Waiting…</div>
+    </div>
+
+    <!-- 30. Keyboard Lock API -->
+    <div class="api-card" id="card-kbdlock">
+      <div class="card-header">
+        <div class="api-name">Keyboard Lock API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Captures OS-level keyboard shortcuts (like F11, Ctrl+W, Alt+Tab) in fullscreen mode. Used in cloud gaming.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testKeyboardLock()">Lock Keys (in FS)</button>
+        <button onclick="navigator.keyboard && navigator.keyboard.unlock()">Unlock</button>
+      </div>
+      <div class="result" id="r-kbdlock">Waiting…</div>
+    </div>
+
+    <!-- 31. Touch Events -->
+    <div class="api-card" id="card-touch">
+      <div class="card-header">
+        <div class="api-name">Touch Events API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Listens for touchstart/touchmove/touchend on touchscreen devices. Reports touch point coordinates.</div>
+      <div id="touchArea" style="background:#21262d;padding:20px;text-align:center;border-radius:4px;border:1px dashed #444;margin-bottom:8px;cursor:pointer;font-size:12px;color:#8b949e;touch-action:none">Touch or click here</div>
+      <div class="btn-row">
+        <button class="primary" onclick="listenTouch()">Start Listening</button>
+        <button class="stop" onclick="stopTouch()">Stop</button>
+      </div>
+      <div class="result" id="r-touch">Waiting…</div>
+    </div>
+
+    <!-- 32. Pointer Events API -->
+    <div class="api-card" id="card-pointer">
+      <div class="card-header">
+        <div class="api-name">Pointer Events API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Unified mouse/touch/stylus input with pressure and tilt data. Works across all input devices.</div>
+      <div id="pointerArea" style="background:#21262d;padding:20px;text-align:center;border-radius:4px;border:1px dashed #444;margin-bottom:8px;cursor:crosshair;font-size:12px;color:#8b949e">Interact here (mouse/touch/stylus)</div>
+      <div class="btn-row">
+        <button class="primary" onclick="listenPointer()">Start Listening</button>
+        <button class="stop" onclick="stopPointerEvents()">Stop</button>
+      </div>
+      <div class="result" id="r-pointer">Waiting…</div>
+    </div>
+
+    <!-- 33. EyeDropper API -->
+    <div class="api-card" id="card-eyedropper">
+      <div class="card-header">
+        <div class="api-name">EyeDropper API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Opens the system color picker to sample any pixel on screen. Chrome 95+, Edge 95+.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testEyeDropper()">Pick Color</button>
+      </div>
+      <div class="result" id="r-eyedropper">Waiting…</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ CONNECTIVITY ══════ -->
+<div class="category" id="connectivity">
+  <div class="category-title">📶 Device Connectivity <span class="badge">6 APIs</span></div>
+  <div class="grid">
+
+    <!-- 34. Web Bluetooth API -->
+    <div class="api-card" id="card-bluetooth">
+      <div class="card-header">
+        <div class="api-name">Web Bluetooth API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Discovers and connects to Bluetooth Low Energy (BLE) devices. Read/write GATT characteristics.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testBluetooth()">Scan BLE Devices</button>
+      </div>
+      <div class="result" id="r-bluetooth">Waiting…</div>
+    </div>
+
+    <!-- 35. WebUSB API -->
+    <div class="api-card" id="card-webusb">
+      <div class="card-header">
+        <div class="api-name">WebUSB API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Connects to USB devices directly from the browser. Supports HID, serial, custom USB profiles.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testWebUSB()">Request USB Device</button>
+      </div>
+      <div class="result" id="r-webusb">Waiting…</div>
+    </div>
+
+    <!-- 36. WebHID API -->
+    <div class="api-card" id="card-webhid">
+      <div class="card-header">
+        <div class="api-name">WebHID API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Connects to HID (Human Interface Device) devices: gamepads, joysticks, keyboards, custom controllers.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testWebHID()">Request HID Device</button>
+      </div>
+      <div class="result" id="r-webhid">Waiting…</div>
+    </div>
+
+    <!-- 37. Web Serial API -->
+    <div class="api-card" id="card-webserial">
+      <div class="card-header">
+        <div class="api-name">Web Serial API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Communicates with serial port devices (Arduino, microcontrollers, GPS modules, CNC machines).</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testWebSerial()">Request Serial Port</button>
+      </div>
+      <div class="result" id="r-webserial">Waiting…</div>
+    </div>
+
+    <!-- 38. Web NFC API -->
+    <div class="api-card" id="card-nfc">
+      <div class="card-header">
+        <div class="api-name">Web NFC API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Scans and writes NFC tags using the device's NFC chip. Android Chrome only.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testNFC()">Scan NFC Tag</button>
+        <button onclick="writeNFC()">Write NFC Tag</button>
+        <button class="stop" onclick="stopNFC()">Stop</button>
+      </div>
+      <div class="result" id="r-nfc">Waiting…</div>
+    </div>
+
+    <!-- 39. Network Information API -->
+    <div class="api-card" id="card-network">
+      <div class="card-header">
+        <div class="api-name">Network Information API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reads current network type, downlink speed, RTT, save-data mode. Fires 'change' event on network switch.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="readNetworkInfo()">Read Network Info</button>
+        <button onclick="watchNetwork()">Watch Changes</button>
+      </div>
+      <div class="result" id="r-network">Waiting…</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ CAMERA & MEDIA ══════ -->
+<div class="category" id="camera">
+  <div class="category-title">📷 Camera, Mic &amp; Media <span class="badge">9 APIs</span></div>
+  <div class="grid">
+
+    <!-- 40. Camera (getUserMedia) -->
+    <div class="api-card" id="card-camera">
+      <div class="card-header">
+        <div class="api-name">Camera API (getUserMedia)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Accesses device camera(s). Supports front/rear camera selection, resolution, frame rate constraints.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="startCamera('user')">Front Camera</button>
+        <button onclick="startCamera('environment')">Rear Camera</button>
+        <button class="stop" onclick="stopCamera()">Stop</button>
+      </div>
+      <div class="result" id="r-camera"><video id="camVideo" autoplay muted playsinline style="max-width:100%;max-height:120px;display:none"></video></div>
+    </div>
+
+    <!-- 41. Microphone (getUserMedia) -->
+    <div class="api-card" id="card-mic">
+      <div class="card-header">
+        <div class="api-name">Microphone API (getUserMedia)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Accesses device microphone. Streams raw audio for recording, visualization, or analysis.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="startMic()">Start Mic</button>
+        <button class="stop" onclick="stopMic()">Stop</button>
+      </div>
+      <canvas id="micCanvas" width="280" height="50" style="background:#0d1117;border-radius:4px;margin-top:6px;display:none"></canvas>
+      <div class="result" id="r-mic">Waiting…</div>
+    </div>
+
+    <!-- 42. Screen Capture API (getDisplayMedia) -->
+    <div class="api-card" id="card-screencap">
+      <div class="card-header">
+        <div class="api-name">Screen Capture API (getDisplayMedia)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Captures screen, window, or browser tab as a video stream. Shows system screen picker dialog.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="startScreenCapture()">Capture Screen</button>
+        <button class="stop" onclick="stopScreenCapture()">Stop</button>
+      </div>
+      <div class="result" id="r-screencap"><video id="screenVideo" autoplay muted playsinline style="max-width:100%;max-height:100px;display:none"></video></div>
+    </div>
+
+    <!-- 43. MediaRecorder API -->
+    <div class="api-card" id="card-recorder">
+      <div class="card-header">
+        <div class="api-name">MediaRecorder API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Records video/audio from camera or screen. Produces downloadable media file blobs.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="startRecording()">Start Recording</button>
+        <button onclick="stopRecording()">Stop &amp; Download</button>
+      </div>
+      <div class="result" id="r-recorder">Start camera first, then record.</div>
+    </div>
+
+    <!-- 44. ImageCapture API -->
+    <div class="api-card" id="card-imagecap">
+      <div class="card-header">
+        <div class="api-name">ImageCapture API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Takes still photos from camera stream. Provides advanced controls: zoom, white balance, flash, focus mode.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="takePhoto()">Take Photo</button>
+        <button onclick="grabFrame()">Grab Frame</button>
+        <button onclick="getCameraCapabilities()">Get Capabilities</button>
+      </div>
+      <div class="result" id="r-imagecap">Start camera first.</div>
+    </div>
+
+    <!-- 45. Barcode Detection API -->
+    <div class="api-card" id="card-barcode">
+      <div class="card-header">
+        <div class="api-name">Barcode Detection API (Shape Detection)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Detects and decodes barcodes/QR codes in images using native device capabilities.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testBarcodeDetect()">Detect in Camera</button>
+      </div>
+      <div class="result" id="r-barcode">Waiting…</div>
+    </div>
+
+    <!-- 46. Face Detection API -->
+    <div class="api-card" id="card-face">
+      <div class="card-header">
+        <div class="api-name">Face Detection API (Shape Detection)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Detects human faces in images using hardware-accelerated native face detection.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testFaceDetect()">Detect Faces</button>
+      </div>
+      <div class="result" id="r-face">Waiting…</div>
+    </div>
+
+    <!-- 47. Text Detection API -->
+    <div class="api-card" id="card-textdetect">
+      <div class="card-header">
+        <div class="api-name">Text Detection API (Shape Detection)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Detects and extracts text from images using native device OCR (Optical Character Recognition). Chrome/Android.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testTextDetect()">Detect Text in Camera</button>
+      </div>
+      <div class="result" id="r-textdetect">Waiting…</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ SYSTEM INFO ══════ -->
+<div class="category" id="system">
+  <div class="category-title">💻 System Information <span class="badge">8 APIs</span></div>
+  <div class="grid">
+
+    <!-- 47. Battery Status API -->
+    <div class="api-card" id="card-battery">
+      <div class="card-header">
+        <div class="api-name">Battery Status API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reads battery level, charging status, and time to full/empty. Fires events on changes.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="getBatteryInfo()">Get Battery Info</button>
+        <button onclick="watchBattery()">Watch Changes</button>
+      </div>
+      <div class="result" id="r-battery">Waiting…</div>
+    </div>
+
+    <!-- 48. Device Memory API -->
+    <div class="api-card" id="card-devmem">
+      <div class="card-header">
+        <div class="api-name">Device Memory API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Returns approximate RAM in GB (rounded to nearest power-of-two). Used for adaptive loading.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="res('r-devmem', 'Device RAM: ' + (navigator.deviceMemory || 'Not supported') + ' GB', navigator.deviceMemory ? 'ok' : 'err')">Read Device Memory</button>
+      </div>
+      <div class="result" id="r-devmem">Waiting…</div>
+    </div>
+
+    <!-- 49. Hardware Concurrency -->
+    <div class="api-card" id="card-hwconcurrency">
+      <div class="card-header">
+        <div class="api-name">Hardware Concurrency</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Returns number of logical CPU cores available. Used to determine optimal Web Worker thread count.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="res('r-hwconcurrency', 'CPU Cores: ' + navigator.hardwareConcurrency, 'ok')">Read CPU Cores</button>
+      </div>
+      <div class="result" id="r-hwconcurrency">Waiting…</div>
+    </div>
+
+    <!-- 50. Storage Manager API -->
+    <div class="api-card" id="card-storage">
+      <div class="card-header">
+        <div class="api-name">Storage Manager API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Queries available storage quota and usage. Can request persistent storage so data survives app eviction.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="checkStorage()">Check Storage</button>
+        <button onclick="requestPersistentStorage()">Request Persistent</button>
+      </div>
+      <div class="result" id="r-storage">Waiting…</div>
+    </div>
+
+    <!-- 51. Performance API -->
+    <div class="api-card" id="card-perf">
+      <div class="card-header">
+        <div class="api-name">Performance / Timing API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reads high-resolution timestamp, navigation timing, memory usage (Chrome), and performance marks.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="readPerformance()">Read Performance</button>
+        <button onclick="measureTiming()">Measure Timing</button>
+      </div>
+      <div class="result" id="r-perf">Waiting…</div>
+    </div>
+
+    <!-- 52. Compute Pressure API -->
+    <div class="api-card" id="card-pressure">
+      <div class="card-header">
+        <div class="api-name">Compute Pressure API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Monitors CPU/GPU thermal and computational pressure (nominal/fair/serious/critical). Chrome 125+.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testComputePressure()">Start Pressure Monitor</button>
+        <button class="stop" onclick="stopComputePressure()">Stop</button>
+      </div>
+      <div class="result" id="r-pressure">Waiting…</div>
+    </div>
+
+    <!-- 53. Device Posture API -->
+    <div class="api-card" id="card-posture">
+      <div class="card-header">
+        <div class="api-name">Device Posture API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Detects physical posture of foldable devices (continuous flat vs folded/tent/book posture).</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testDevicePosture()">Get Posture</button>
+      </div>
+      <div class="result" id="r-posture">Waiting…</div>
+    </div>
+
+    <!-- 54. WebGPU API -->
+    <div class="api-card" id="card-webgpu">
+      <div class="card-header">
+        <div class="api-name">WebGPU API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Direct low-level GPU access for rendering and compute. Successor to WebGL. Chrome 113+, Safari 18+.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testWebGPU()">Request GPU Adapter</button>
+        <button onclick="runGPUCompute()">Run GPU Compute</button>
+      </div>
+      <div class="result" id="r-webgpu">Waiting…</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ STORAGE & FILES ══════ -->
+<div class="category" id="storage">
+  <div class="category-title">💾 Storage &amp; File System <span class="badge">7 APIs</span></div>
+  <div class="grid">
+
+    <!-- 55. File System Access API -->
+    <div class="api-card" id="card-fsopen">
+      <div class="card-header">
+        <div class="api-name">File System Access API — Open</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Opens native OS file picker and reads file contents with read/write access to local files.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="openFile()">Open File</button>
+      </div>
+      <div class="result" id="r-fsopen">Waiting…</div>
+    </div>
+
+    <!-- 56. File System Access API — Save -->
+    <div class="api-card" id="card-fssave">
+      <div class="card-header">
+        <div class="api-name">File System Access API — Save</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Saves a file to a user-chosen location using the native OS Save dialog. Write directly to disk.</div>
+      <input type="text" id="saveContent" value="Hello from Web API!" placeholder="Content to save…">
+      <div class="btn-row">
+        <button class="primary" onclick="saveFile()">Save to Disk</button>
+      </div>
+      <div class="result" id="r-fssave">Waiting…</div>
+    </div>
+
+    <!-- 57. Origin Private File System (OPFS) -->
+    <div class="api-card" id="card-opfs">
+      <div class="card-header">
+        <div class="api-name">Origin Private File System (OPFS)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">High-performance virtual file system sandboxed to the origin. For large files, databases, SQLite in-browser.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testOPFS()">Write &amp; Read File</button>
+      </div>
+      <div class="result" id="r-opfs">Waiting…</div>
+    </div>
+
+    <!-- 58. Clipboard API — Write -->
+    <div class="api-card" id="card-clipwrite">
+      <div class="card-header">
+        <div class="api-name">Clipboard API — Write</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Programmatically writes text or images to the system clipboard. Requires user gesture.</div>
+      <input type="text" id="clipText" value="Copied from Web API 🎉">
+      <div class="btn-row">
+        <button class="primary" onclick="writeClipboard()">Copy to Clipboard</button>
+        <button onclick="writeClipboardImage()">Copy Image</button>
+      </div>
+      <div class="result" id="r-clipwrite">Waiting…</div>
+    </div>
+
+    <!-- 59. Clipboard API — Read -->
+    <div class="api-card" id="card-clipread">
+      <div class="card-header">
+        <div class="api-name">Clipboard API — Read</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reads contents of system clipboard (text or images). Requires clipboard-read permission.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="readClipboard()">Read Clipboard</button>
+      </div>
+      <div class="result" id="r-clipread">Waiting…</div>
+    </div>
+
+    <!-- 60. Contact Picker API -->
+    <div class="api-card" id="card-contacts">
+      <div class="card-header">
+        <div class="api-name">Contact Picker API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Opens device contacts app and returns selected contacts (name, email, phone, address). Android/iOS Safari.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="pickContacts()">Pick Contacts</button>
+      </div>
+      <div class="result" id="r-contacts">Waiting…</div>
+    </div>
+
+    <!-- 61. Local Font Access API -->
+    <div class="api-card" id="card-fonts">
+      <div class="card-header">
+        <div class="api-name">Local Font Access API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Enumerates fonts installed on the user's device. Chrome 103+. Requires 'local-fonts' permission.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="queryLocalFontsAPI()">Query Local Fonts</button>
+      </div>
+      <div class="result" id="r-fonts">Waiting…</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ NETWORK & COMMS ══════ -->
+<div class="category" id="network">
+  <div class="category-title">🌐 Network &amp; Notifications <span class="badge">8 APIs</span></div>
+  <div class="grid">
+
+    <!-- 62. Background Fetch API -->
+    <div class="api-card" id="card-bgfetch">
+      <div class="card-header">
+        <div class="api-name">Background Fetch API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Downloads large files in the background even if the browser is closed. Shows OS download progress UI. Chrome 74+.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testBackgroundFetch()">Start Background Fetch</button>
+      </div>
+      <div class="result" id="r-bgfetch">Waiting…</div>
+    </div>
+
+    <!-- 63. Notifications API -->
+    <div class="api-card" id="card-notif">
+      <div class="card-header">
+        <div class="api-name">Notifications API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Shows OS-level desktop/mobile push notifications outside the browser window.</div>
+      <input type="text" id="notifTitle" value="Device API Test" placeholder="Notification title">
+      <input type="text" id="notifBody" value="Hello from the Web!" placeholder="Body text">
+      <div class="btn-row">
+        <button class="primary" onclick="sendNotification()">Send Notification</button>
+      </div>
+      <div class="result" id="r-notif">Waiting…</div>
+    </div>
+
+    <!-- 63. Web Share API -->
+    <div class="api-card" id="card-share">
+      <div class="card-header">
+        <div class="api-name">Web Share API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Opens the native OS share sheet to share text, URLs, or files with any installed app.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="webShare()">Share Text/URL</button>
+        <button onclick="webShareFile()">Share File</button>
+      </div>
+      <div class="result" id="r-share">Waiting…</div>
+    </div>
+
+    <!-- 64. Push API -->
+    <div class="api-card" id="card-push">
+      <div class="card-header">
+        <div class="api-name">Push API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Subscribe to push messages delivered by servers even when the browser is closed (via Service Worker).</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testPushAPI()">Subscribe to Push</button>
+      </div>
+      <div class="result" id="r-push">Waiting…</div>
+    </div>
+
+    <!-- 65. Background Sync API -->
+    <div class="api-card" id="card-bgsync">
+      <div class="card-header">
+        <div class="api-name">Background Sync API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Defers tasks until device has network. Service Worker retries sync events automatically when online.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testBackgroundSync()">Register Sync</button>
+      </div>
+      <div class="result" id="r-bgsync">Waiting…</div>
+    </div>
+
+    <!-- 66. Periodic Background Sync -->
+    <div class="api-card" id="card-pbgsync">
+      <div class="card-header">
+        <div class="api-name">Periodic Background Sync API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Schedules periodic background data sync at set intervals (like news fetch). Requires notification permission.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testPeriodicSync()">Register Periodic Sync</button>
+      </div>
+      <div class="result" id="r-pbgsync">Waiting…</div>
+    </div>
+
+    <!-- 67. WebXR Device API -->
+    <div class="api-card" id="card-webxr">
+      <div class="card-header">
+        <div class="api-name">WebXR Device API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Access VR/AR headsets and mixed reality devices. Detects available XR sessions (immersive-vr, immersive-ar, inline).</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testWebXR()">Check XR Support</button>
+        <button onclick="startXRSession()">Request VR Session</button>
+      </div>
+      <div class="result" id="r-webxr">Waiting…</div>
+    </div>
+
+    <!-- 68. Idle Detection API -->
+    <div class="api-card" id="card-idle">
+      <div class="card-header">
+        <div class="api-name">Idle Detection API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Detects when user is away from device (idle) and when screen is locked. Requires 'idle-detection' permission.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="startIdleDetect()">Start Idle Detection</button>
+        <button class="stop" onclick="stopIdleDetect()">Stop</button>
+      </div>
+      <div class="result" id="r-idle">Waiting…</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ ADVANCED ══════ -->
+<div class="category" id="advanced">
+  <div class="category-title">⚡ Advanced &amp; Experimental <span class="badge">9 APIs</span></div>
+  <div class="grid">
+
+    <!-- 69. Navigation API -->
+    <div class="api-card" id="card-navapi">
+      <div class="card-header">
+        <div class="api-name">Navigation API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Modern replacement for History API. Intercept and control navigations, manage session history, transitionWhile(). Chrome 102+.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testNavigationAPI()">Get Current Entry</button>
+        <button onclick="listenNavigation()">Listen Navigations</button>
+      </div>
+      <div class="result" id="r-navapi">Waiting…</div>
+    </div>
+
+    <!-- 70. Payment Request API -->
+    <div class="api-card" id="card-payment">
+      <div class="card-header">
+        <div class="api-name">Payment Request API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Opens native OS payment UI (Apple Pay, Google Pay, browser-saved cards). Standardized checkout flow.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testPaymentRequest()">Show Payment UI</button>
+      </div>
+      <div class="result" id="r-payment">Waiting…</div>
+    </div>
+
+    <!-- 70. Credential Management API -->
+    <div class="api-card" id="card-creds">
+      <div class="card-header">
+        <div class="api-name">Credential Management API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Accesses saved passwords, passkeys (WebAuthn), and federated identity credentials from device's password manager.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testCredentials()">Get Credentials</button>
+        <button onclick="testWebAuthn()">WebAuthn Passkey</button>
+      </div>
+      <div class="result" id="r-creds">Waiting…</div>
+    </div>
+
+    <!-- 71. Ink API -->
+    <div class="api-card" id="card-ink">
+      <div class="card-header">
+        <div class="api-name">Ink API (Digital Ink)</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Reduces stylus latency by allowing the OS compositor to render ink strokes while JS catches up. Windows/Surface.</div>
+      <div id="inkCanvas" style="background:#21262d;border-radius:4px;margin-bottom:6px;cursor:crosshair;border:1px dashed #444;height:60px;display:flex;align-items:center;justify-content:center;color:#8b949e;font-size:12px">Draw here with stylus</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testInkAPI()">Init Ink API</button>
+      </div>
+      <div class="result" id="r-ink">Waiting…</div>
+    </div>
+
+    <!-- 72. Web Locks API -->
+    <div class="api-card" id="card-locks">
+      <div class="card-header">
+        <div class="api-name">Web Locks API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Prevents multiple tabs/workers from accessing a shared resource simultaneously (like a mutex for web).</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testWebLocks()">Acquire Lock</button>
+        <button onclick="queryLocks()">Query Locks</button>
+      </div>
+      <div class="result" id="r-locks">Waiting…</div>
+    </div>
+
+    <!-- 73. Storage Access API -->
+    <div class="api-card" id="card-storageaccess">
+      <div class="card-header">
+        <div class="api-name">Storage Access API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Lets embedded iframes request access to their first-party cookies/storage (for SSO, embedded widgets in iframes).</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testStorageAccess()">Request Storage Access</button>
+        <button onclick="checkStorageAccess()">Check Access</button>
+      </div>
+      <div class="result" id="r-storageaccess">Waiting…</div>
+    </div>
+
+    <!-- 74. Cookie Store API -->
+    <div class="api-card" id="card-cookiestore">
+      <div class="card-header">
+        <div class="api-name">Cookie Store API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Async cookie read/write/delete and change events. Works in Service Workers where document.cookie is unavailable.</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testCookieStore()">Write Cookie</button>
+        <button onclick="readCookieStore()">Read Cookies</button>
+        <button onclick="watchCookieStore()">Watch Changes</button>
+      </div>
+      <div class="result" id="r-cookiestore">Waiting…</div>
+    </div>
+
+    <!-- 75. Content Index API -->
+    <div class="api-card" id="card-contentindex">
+      <div class="card-header">
+        <div class="api-name">Content Index API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Registers offline content in the device's OS-level content surface (like Chrome's offline pages in Downloads).</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testContentIndex()">Register Content</button>
+      </div>
+      <div class="result" id="r-contentindex">Waiting…</div>
+    </div>
+
+    <!-- 76. Prioritized Task Scheduling API -->
+    <div class="api-card" id="card-scheduler">
+      <div class="card-header">
+        <div class="api-name">Prioritized Task Scheduling API</div>
+        <span class="support-badge">checking…</span>
+      </div>
+      <div class="api-desc">Schedules tasks at 'user-blocking', 'user-visible', or 'background' priority using scheduler.postTask().</div>
+      <div class="btn-row">
+        <button class="primary" onclick="testScheduler()">Schedule Tasks</button>
+      </div>
+      <div class="result" id="r-scheduler">Waiting…</div>
+    </div>
+
+  </div>
+</div>
+
+</main>
+
+<div id="floatLog"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// UTILITY
+// ═══════════════════════════════════════════════════════════════
+
+let wakeLock = null, geoWatchId = null, speechRec = null, gamepadTimer = null;
+let accelSensor = null, gyroSensor = null, magSensor = null;
+let absOrSensor = null, relOrSensor = null, linearAccSensor = null, gravitySensor = null;
+let ambientLightSensor = null, pressureObserver = null, idleDetector = null;
+let micStream = null, camStream = null, screenStream = null, mediaRecorder = null, recordedChunks = [];
+let audioCtx = null, audioSource = null, nfcReader = null;
+let devOrientHandler = null, devMotionHandler = null;
+let touchHandler = null, pointerHandler = null;
+let netChangeHandler = null, battWatcher = null;
+let cookieStoreWatcher = null;
+
+function res(id, msg, cls = '') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.querySelector('video, canvas')) {
+    const text = el.querySelector('.res-text') || (() => {
+      const t = document.createElement('div'); t.className = 'res-text';
+      el.prepend(t); return t;
+    })();
+    text.textContent = msg;
+    text.className = 'res-text ' + cls;
+    return;
+  }
+  el.textContent = msg;
+  el.className = 'result ' + cls;
+}
+
+function log(msg) {
+  const fl = document.getElementById('floatLog');
+  fl.style.display = 'block';
+  fl.textContent = msg;
+  setTimeout(() => { fl.style.display = 'none'; }, 4000);
+}
+
+function fmt(n) { return typeof n === 'number' ? n.toFixed(3) : n; }
+
+// ═══════════════════════════════════════════════════════════════
+// SUPPORT DETECTION & CARD STYLING
+// ═══════════════════════════════════════════════════════════════
+
+const checks = {
+  'fullscreen':     () => !!document.documentElement.requestFullscreen,
+  'orientation':    () => !!screen.orientation,
+  'wakelock':       () => 'wakeLock' in navigator,
+  'pagevis':        () => 'hidden' in document,
+  'pip':            () => !!document.exitPictureInPicture,
+  'docpip':         () => !!window.documentPictureInPicture,
+  'multiscreen':    () => 'getScreenDetails' in window,
+  'presentation':   () => !!window.PresentationRequest,
+  'webaudio':       () => !!(window.AudioContext || window.webkitAudioContext),
+  'tts':            () => 'speechSynthesis' in window,
+  'stt':            () => !!(window.SpeechRecognition || window.webkitSpeechRecognition),
+  'mediasession':   () => 'mediaSession' in navigator,
+  'remoteplay':     () => !!window.RemotePlayback,
+  'midi':           () => 'requestMIDIAccess' in navigator,
+  'vibration':      () => 'vibrate' in navigator,
+  'devorientation': () => 'DeviceOrientationEvent' in window,
+  'devmotion':      () => 'DeviceMotionEvent' in window,
+  'accelerometer':  () => typeof Accelerometer !== 'undefined',
+  'gyroscope':      () => typeof Gyroscope !== 'undefined',
+  'magnetometer':   () => typeof Magnetometer !== 'undefined',
+  'abssensor':      () => typeof AbsoluteOrientationSensor !== 'undefined',
+  'relsensor':      () => typeof RelativeOrientationSensor !== 'undefined',
+  'linearacc':      () => typeof LinearAccelerationSensor !== 'undefined',
+  'gravity':        () => typeof GravitySensor !== 'undefined',
+  'light':          () => typeof AmbientLightSensor !== 'undefined',
+  'geo':            () => 'geolocation' in navigator,
+  'pointerlock':    () => 'requestPointerLock' in document.documentElement,
+  'gamepad':        () => 'getGamepads' in navigator,
+  'vkeyboard':      () => 'virtualKeyboard' in navigator,
+  'kbdlock':        () => navigator.keyboard && 'lock' in navigator.keyboard,
+  'touch':          () => 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+  'pointer':        () => 'onpointermove' in window,
+  'eyedropper':     () => 'EyeDropper' in window,
+  'bluetooth':      () => 'bluetooth' in navigator,
+  'webusb':         () => 'usb' in navigator,
+  'webhid':         () => 'hid' in navigator,
+  'webserial':      () => 'serial' in navigator,
+  'nfc':            () => 'NDEFReader' in window,
+  'network':        () => 'connection' in navigator || 'mozConnection' in navigator,
+  'camera':         () => navigator.mediaDevices && 'getUserMedia' in navigator.mediaDevices,
+  'mic':            () => navigator.mediaDevices && 'getUserMedia' in navigator.mediaDevices,
+  'screencap':      () => navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices,
+  'recorder':       () => typeof MediaRecorder !== 'undefined',
+  'imagecap':       () => typeof ImageCapture !== 'undefined',
+  'barcode':        () => typeof BarcodeDetector !== 'undefined',
+  'face':           () => typeof FaceDetector !== 'undefined',
+  'textdetect':     () => typeof TextDetector !== 'undefined',
+  'battery':        () => 'getBattery' in navigator,
+  'devmem':         () => 'deviceMemory' in navigator,
+  'hwconcurrency':  () => 'hardwareConcurrency' in navigator,
+  'storage':        () => 'storage' in navigator,
+  'perf':           () => 'performance' in window,
+  'pressure':       () => typeof PressureObserver !== 'undefined',
+  'posture':        () => 'devicePosture' in navigator,
+  'webgpu':         () => 'gpu' in navigator,
+  'fsopen':         () => 'showOpenFilePicker' in window,
+  'fssave':         () => 'showSaveFilePicker' in window,
+  'opfs':           () => !!(navigator.storage && navigator.storage.getDirectory),
+  'clipwrite':      () => navigator.clipboard && 'writeText' in navigator.clipboard,
+  'clipread':       () => navigator.clipboard && 'readText' in navigator.clipboard,
+  'contacts':       () => 'contacts' in navigator,
+  'fonts':          () => 'queryLocalFonts' in window,
+  'notif':          () => 'Notification' in window,
+  'share':          () => 'share' in navigator,
+  'push':           () => 'PushManager' in window,
+  'bgfetch':        () => 'serviceWorker' in navigator,
+  'bgsync':         () => 'serviceWorker' in navigator,
+  'pbgsync':        () => 'serviceWorker' in navigator,
+  'webxr':          () => 'xr' in navigator,
+  'idle':           () => typeof IdleDetector !== 'undefined',
+  'payment':        () => typeof PaymentRequest !== 'undefined',
+  'creds':          () => 'credentials' in navigator,
+  'ink':            () => 'ink' in navigator,
+  'locks':          () => navigator.locks && 'request' in navigator.locks,
+  'storageaccess':  () => 'requestStorageAccess' in document,
+  'cookiestore':    () => 'cookieStore' in window,
+  'contentindex':   () => false,  // requires SW with content-index
+  'navapi':         () => 'navigation' in window,
+  'scheduler':      () => 'scheduler' in window,
+};
+
+let supportedCount = 0, partialCount = 0, unsupportedCount = 0;
+
+function detectSupport() {
+  for (const [id, fn] of Object.entries(checks)) {
+    const card = document.getElementById('card-' + id);
+    if (!card) continue;
+    const badge = card.querySelector('.support-badge');
+    let supported = false;
+    try { supported = fn(); } catch (e) {}
+    if (supported) {
+      card.classList.add('supported');
+      if (badge) { badge.textContent = '✓ Supported'; badge.className = 'support-badge yes'; }
+      supportedCount++;
+    } else {
+      card.classList.add('unsupported');
+      if (badge) { badge.textContent = '✗ Not Available'; badge.className = 'support-badge no'; }
+      unsupportedCount++;
+    }
+  }
+  const total = supportedCount + partialCount + unsupportedCount;
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('supportedCount').textContent = supportedCount;
+  document.getElementById('partialCount').textContent = partialCount;
+  document.getElementById('unsupportedCount').textContent = unsupportedCount;
+}
+
+function filterAPIs(query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll('.api-card').forEach(card => {
+    const name = card.querySelector('.api-name').textContent.toLowerCase();
+    const desc = card.querySelector('.api-desc').textContent.toLowerCase();
+    card.style.display = (name.includes(q) || desc.includes(q)) ? '' : 'none';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 1. DISPLAY & SCREEN APIs
+// ═══════════════════════════════════════════════════════════════
+
+function testFullscreen() {
+  document.documentElement.requestFullscreen().then(() => {
+    res('r-fullscreen', '✓ Fullscreen active', 'ok');
+  }).catch(e => res('r-fullscreen', '✗ ' + e.message, 'err'));
+}
+function exitFullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  res('r-fullscreen', 'Exited fullscreen', 'info');
+}
+function readOrientation() {
+  const o = screen.orientation;
+  res('r-orientation', `Type: ${o.type} | Angle: ${o.angle}°`, 'ok');
+}
+function lockOrientation(type) {
+  screen.orientation.lock(type).then(() => {
+    res('r-orientation', `Locked to ${type}`, 'ok');
+  }).catch(e => res('r-orientation', '✗ ' + e.message + ' (requires fullscreen)', 'err'));
+}
+function requestWakeLock() {
+  if (!('wakeLock' in navigator)) { res('r-wakelock','Not supported','err'); return; }
+  navigator.wakeLock.request('screen').then(wl => {
+    wakeLock = wl;
+    wl.addEventListener('release', () => res('r-wakelock', 'Wake lock released by system', 'warn'));
+    res('r-wakelock', '✓ Wake lock acquired — screen will stay on', 'ok');
+  }).catch(e => res('r-wakelock', '✗ ' + e.message, 'err'));
+}
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release(); wakeLock = null; res('r-wakelock', 'Manually released', 'warn'); }
+  else res('r-wakelock', 'No active wake lock', 'warn');
+}
+function checkVisibility() {
+  res('r-pagevis', `Visible: ${!document.hidden} | State: ${document.visibilityState}`, 'ok');
+}
+function listenVisibility() {
+  document.addEventListener('visibilitychange', () => {
+    res('r-pagevis', `Changed → ${document.visibilityState} (hidden=${document.hidden})`, 'info');
+  });
+  res('r-pagevis', 'Listening… switch tabs to test', 'info');
+}
+function requestPiP() {
+  const v = document.getElementById('pipVideo');
+  v.requestPictureInPicture().then(() => {
+    res('r-pip', '✓ Video is now in Picture-in-Picture', 'ok');
+  }).catch(e => res('r-pip', '✗ ' + e.message, 'err'));
+}
+function exitPiP() {
+  if (document.pictureInPictureElement) document.exitPictureInPicture();
+  res('r-pip', 'Exited PiP', 'info');
+}
+function testDocPiP() {
+  if (!window.documentPictureInPicture) { res('r-docpip','Not supported (Chrome 116+)','err'); return; }
+  window.documentPictureInPicture.requestWindow({ width: 300, height: 200 }).then(win => {
+    win.document.body.style.background = '#1a1a2e';
+    win.document.body.style.color = 'white';
+    win.document.body.innerHTML = '<h2 style="padding:20px;font-family:sans-serif">Document PiP Window ✓</h2>';
+    res('r-docpip', '✓ Document PiP window opened', 'ok');
+  }).catch(e => res('r-docpip', '✗ ' + e.message, 'err'));
+}
+function testScreenDetails() {
+  if (!('getScreenDetails' in window)) { res('r-multiscreen','Not supported','err'); return; }
+  window.getScreenDetails().then(sd => {
+    res('r-multiscreen', `✓ ${sd.screens.length} screen(s) detected | Current: ${sd.currentScreen.width}x${sd.currentScreen.height}`, 'ok');
+  }).catch(e => res('r-multiscreen', '✗ ' + e.message, 'err'));
+}
+function testPresentation() {
+  if (!window.PresentationRequest) { res('r-presentation','Not supported','err'); return; }
+  try {
+    const pr = new PresentationRequest(['about:blank']);
+    pr.getAvailability().then(a => {
+      res('r-presentation', `PresentationRequest created | Displays available: ${a.value}`, 'ok');
+    }).catch(e => res('r-presentation', '✗ ' + e.message, 'err'));
+  } catch(e) { res('r-presentation', '✗ ' + e.message, 'err'); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 2. AUDIO & SPEECH APIs
+// ═══════════════════════════════════════════════════════════════
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function playTone() {
+  const ctx = getAudioCtx(), freq = +document.getElementById('audioFreq').value;
+  if (audioSource) { try { audioSource.stop(); } catch(e){} }
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine'; osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.3, ctx.currentTime);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(); audioSource = osc;
+  res('r-webaudio', `✓ Playing ${freq}Hz sine wave — hit Stop to end`, 'ok');
+}
+function playBeep() {
+  const ctx = getAudioCtx();
+  const osc = ctx.createOscillator(); const g = ctx.createGain();
+  osc.frequency.value = 880;
+  g.gain.setValueAtTime(0.5, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+  osc.connect(g); g.connect(ctx.destination);
+  osc.start(); osc.stop(ctx.currentTime + 0.3);
+  res('r-webaudio', '✓ Beep played on device speaker', 'ok');
+}
+function playSweep() {
+  const ctx = getAudioCtx();
+  if (audioSource) { try { audioSource.stop(); } catch(e){} }
+  const osc = ctx.createOscillator(); const g = ctx.createGain();
+  osc.frequency.setValueAtTime(200, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + 2);
+  g.gain.setValueAtTime(0.3, ctx.currentTime);
+  g.gain.setValueAtTime(0, ctx.currentTime + 2);
+  osc.connect(g); g.connect(ctx.destination);
+  osc.start(); osc.stop(ctx.currentTime + 2); audioSource = osc;
+  res('r-webaudio', '✓ Frequency sweep 200Hz→2000Hz', 'ok');
+}
+function playNoise() {
+  const ctx = getAudioCtx();
+  if (audioSource) { try { audioSource.stop(); } catch(e){} }
+  const buf = ctx.createBuffer(1, ctx.sampleRate * 1, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  const src = ctx.createBufferSource(); src.buffer = buf;
+  const g = ctx.createGain(); g.gain.value = 0.2;
+  src.connect(g); g.connect(ctx.destination);
+  src.start(); audioSource = src;
+  res('r-webaudio', '✓ White noise (1s) playing on speaker', 'ok');
+}
+function stopAudio() {
+  if (audioSource) { try { audioSource.stop(); } catch(e){} audioSource = null; }
+  if (audioCtx) { audioCtx.suspend(); }
+  res('r-webaudio', 'Audio stopped', 'warn');
+}
+function speakText() {
+  const u = new SpeechSynthesisUtterance(document.getElementById('ttsText').value);
+  u.rate = +document.getElementById('ttsRate').value;
+  u.onstart = () => res('r-tts', '✓ Speaking…', 'ok');
+  u.onend = () => res('r-tts', '✓ Speech complete', 'ok');
+  u.onerror = e => res('r-tts', '✗ ' + e.error, 'err');
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+}
+function listVoices() {
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) { setTimeout(listVoices, 300); return; }
+  res('r-tts', `${voices.length} voices: ` + voices.slice(0,3).map(v=>v.name).join(', ') + '…', 'ok');
+}
+let sttActive = false;
+function startSTT() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { res('r-stt','Not supported','err'); return; }
+  speechRec = new SR();
+  speechRec.continuous = true; speechRec.interimResults = true;
+  speechRec.onresult = e => {
+    const t = Array.from(e.results).map(r=>r[0].transcript).join(' ');
+    res('r-stt', '🎤 ' + t, 'ok');
+  };
+  speechRec.onerror = e => res('r-stt', '✗ ' + e.error, 'err');
+  speechRec.start();
+  res('r-stt', '🎤 Listening for speech…', 'info');
+}
+function stopSTT() { if (speechRec) { speechRec.stop(); res('r-stt','Stopped','warn'); } }
+function setMediaSession() {
+  if (!('mediaSession' in navigator)) { res('r-mediasession','Not supported','err'); return; }
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: 'Device API Demo', artist: 'Web APIs', album: 'May 2026',
+  });
+  navigator.mediaSession.setActionHandler('play', () => log('▶ Play pressed'));
+  navigator.mediaSession.setActionHandler('pause', () => log('⏸ Pause pressed'));
+  navigator.mediaSession.setActionHandler('nexttrack', () => log('⏭ Next pressed'));
+  res('r-mediasession', '✓ Media session metadata set — check OS notification/lock screen', 'ok');
+}
+function clearMediaSession() {
+  if ('mediaSession' in navigator) navigator.mediaSession.metadata = null;
+  res('r-mediasession', 'Cleared', 'warn');
+}
+function testRemotePlayback() {
+  const v = document.getElementById('pipVideo');
+  if (!v.remote) { res('r-remoteplay','Remote Playback not supported','err'); return; }
+  v.remote.prompt().then(() => res('r-remoteplay','✓ Remote device picker shown','ok'))
+    .catch(e => res('r-remoteplay','✗ '+e.message,'err'));
+}
+function testMIDI() {
+  if (!('requestMIDIAccess' in navigator)) { res('r-midi','Not supported','err'); return; }
+  navigator.requestMIDIAccess().then(access => {
+    const inputs = [...access.inputs.values()];
+    const outputs = [...access.outputs.values()];
+    res('r-midi', `✓ MIDI access granted | Inputs: ${inputs.length} | Outputs: ${outputs.length}` + (inputs.length ? ' | ' + inputs.map(i=>i.name).join(', ') : ''), 'ok');
+  }).catch(e => res('r-midi','✗ '+e.message,'err'));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 3. MOTION & SENSORS
+// ═══════════════════════════════════════════════════════════════
+
+function startDeviceOrientation() {
+  if (!('DeviceOrientationEvent' in window)) { res('r-devorientation','Not supported','err'); return; }
+  const fn = e => {
+    if (!e.alpha && !e.beta && !e.gamma) { res('r-devorientation','No sensor data (desktop may not have gyroscope)','warn'); return; }
+    res('r-devorientation', `α=${fmt(e.alpha)}° β=${fmt(e.beta)}° γ=${fmt(e.gamma)}°`, 'ok');
+  };
+  // iOS 13+ requires permission
+  if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission().then(r => {
+      if (r === 'granted') { window.addEventListener('deviceorientation', fn); devOrientHandler = fn; }
+      else res('r-devorientation','Permission denied','err');
+    });
+  } else { window.addEventListener('deviceorientation', fn); devOrientHandler = fn; }
+  res('r-devorientation', '🔄 Listening (tilt device)…', 'info');
+}
+function stopDeviceOrientation() {
+  if (devOrientHandler) { window.removeEventListener('deviceorientation', devOrientHandler); devOrientHandler = null; }
+  res('r-devorientation','Stopped','warn');
+}
+function startDeviceMotion() {
+  if (!('DeviceMotionEvent' in window)) { res('r-devmotion','Not supported','err'); return; }
+  const fn = e => {
+    const a = e.acceleration || {};
+    res('r-devmotion', `Acc: x=${fmt(a.x)} y=${fmt(a.y)} z=${fmt(a.z)} m/s²`, 'ok');
+  };
+  if (typeof DeviceMotionEvent.requestPermission === 'function') {
+    DeviceMotionEvent.requestPermission().then(r => {
+      if (r === 'granted') { window.addEventListener('devicemotion', fn); devMotionHandler = fn; }
+    });
+  } else { window.addEventListener('devicemotion', fn); devMotionHandler = fn; }
+  res('r-devmotion','🏃 Listening (shake device)…','info');
+}
+function stopDeviceMotion() {
+  if (devMotionHandler) { window.removeEventListener('devicemotion', devMotionHandler); devMotionHandler = null; }
+  res('r-devmotion','Stopped','warn');
+}
+function startGenericSensor(SensorClass, id, label) {
+  try {
+    const s = new SensorClass({ frequency: 10 });
+    s.addEventListener('reading', () => {
+      const x=fmt(s.x||0), y=fmt(s.y||0), z=fmt(s.z||0);
+      res(id, `${label}: x=${x} y=${y} z=${z}`, 'ok');
+    });
+    s.addEventListener('error', e => res(id, '✗ ' + e.error.message, 'err'));
+    s.start();
+    return s;
+  } catch(e) { res(id, '✗ ' + e.message + ' (requires HTTPS + permissions)', 'err'); return null; }
+}
+function testAccelerometer() { accelSensor = startGenericSensor(Accelerometer, 'r-accelerometer', 'Accel(m/s²)'); }
+function stopAccelerometer() { if(accelSensor){accelSensor.stop();accelSensor=null;res('r-accelerometer','Stopped','warn');} }
+function testGyroscope() { gyroSensor = startGenericSensor(Gyroscope, 'r-gyroscope', 'Gyro(rad/s)'); }
+function stopGyroscope() { if(gyroSensor){gyroSensor.stop();gyroSensor=null;res('r-gyroscope','Stopped','warn');} }
+function testMagnetometer() { magSensor = startGenericSensor(Magnetometer, 'r-magnetometer', 'Mag(μT)'); }
+function stopMagnetometer() { if(magSensor){magSensor.stop();magSensor=null;res('r-magnetometer','Stopped','warn');} }
+function testLinearAcc() { linearAccSensor = startGenericSensor(LinearAccelerationSensor,'r-linearacc','LinAcc(m/s²)'); }
+function stopLinearAcc() { if(linearAccSensor){linearAccSensor.stop();linearAccSensor=null;res('r-linearacc','Stopped','warn');} }
+function testGravity() { gravitySensor = startGenericSensor(GravitySensor,'r-gravity','Gravity(m/s²)'); }
+function stopGravity() { if(gravitySensor){gravitySensor.stop();gravitySensor=null;res('r-gravity','Stopped','warn');} }
+function testAbsOrientation() {
+  try {
+    absOrSensor = new AbsoluteOrientationSensor({ frequency: 10 });
+    absOrSensor.addEventListener('reading', () => {
+      const q = absOrSensor.quaternion;
+      res('r-abssensor', `Quat: [${q.map(v=>fmt(v)).join(', ')}]`, 'ok');
+    });
+    absOrSensor.start();
+  } catch(e) { res('r-abssensor','✗ '+e.message,'err'); }
+}
+function stopAbsOrientation() { if(absOrSensor){absOrSensor.stop();absOrSensor=null;res('r-abssensor','Stopped','warn');} }
+function testRelOrientation() {
+  try {
+    relOrSensor = new RelativeOrientationSensor({ frequency: 10 });
+    relOrSensor.addEventListener('reading', () => {
+      const q = relOrSensor.quaternion;
+      res('r-relsensor', `Quat: [${q.map(v=>fmt(v)).join(', ')}]`, 'ok');
+    });
+    relOrSensor.start();
+  } catch(e) { res('r-relsensor','✗ '+e.message,'err'); }
+}
+function stopRelOrientation() { if(relOrSensor){relOrSensor.stop();relOrSensor=null;res('r-relsensor','Stopped','warn');} }
+function testAmbientLight() {
+  try {
+    ambientLightSensor = new AmbientLightSensor({ frequency: 5 });
+    ambientLightSensor.addEventListener('reading', () => res('r-light', `Light: ${ambientLightSensor.illuminance} lux`, 'ok'));
+    ambientLightSensor.addEventListener('error', e => res('r-light','✗ '+e.error.message,'err'));
+    ambientLightSensor.start();
+  } catch(e) { res('r-light','✗ '+e.message,'err'); }
+}
+function stopAmbientLight() { if(ambientLightSensor){ambientLightSensor.stop();ambientLightSensor=null;res('r-light','Stopped','warn');} }
+let geoWid = null;
+function getLocation() {
+  navigator.geolocation.getCurrentPosition(p => {
+    res('r-geo', `✓ Lat: ${p.coords.latitude.toFixed(5)} Lon: ${p.coords.longitude.toFixed(5)} Acc: ±${p.coords.accuracy}m`, 'ok');
+  }, e => res('r-geo', '✗ '+e.message, 'err'), {enableHighAccuracy:true});
+}
+function watchLocation() {
+  if (geoWid) navigator.geolocation.clearWatch(geoWid);
+  geoWid = navigator.geolocation.watchPosition(p => {
+    res('r-geo', `📍 Live: Lat ${p.coords.latitude.toFixed(5)} Lon ${p.coords.longitude.toFixed(5)}`, 'ok');
+  }, e => res('r-geo','✗ '+e.message,'err'));
+}
+function stopWatchLocation() {
+  if (geoWid) { navigator.geolocation.clearWatch(geoWid); geoWid = null; res('r-geo','Watch stopped','warn'); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 4. INPUT DEVICES
+// ═══════════════════════════════════════════════════════════════
+
+function requestPointerLock() {
+  document.getElementById('pointerTarget').requestPointerLock();
+  res('r-pointerlock','Pointer lock requested — mouse now captured','info');
+  document.addEventListener('pointerlockchange', () => {
+    if (document.pointerLockElement) {
+      document.addEventListener('mousemove', e => {
+        res('r-pointerlock', `Locked ✓ | Δx=${e.movementX} Δy=${e.movementY}`, 'ok');
+      });
+    } else { res('r-pointerlock','Lock released','warn'); }
+  });
+}
+let gamepadRAF = null;
+function startGamepad() {
+  function poll() {
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    for (const gp of gps) {
+      if (!gp) continue;
+      const pressed = gp.buttons.map((b,i)=>b.pressed?i:null).filter(v=>v!==null);
+      res('r-gamepad', `${gp.id.slice(0,40)}… | Axes:[${gp.axes.map(a=>a.toFixed(2))}] Btns:[${pressed.join(',')||'none'}]`, 'ok');
+    }
+    gamepadRAF = requestAnimationFrame(poll);
+  }
+  window.addEventListener('gamepadconnected', e => res('r-gamepad','✓ Connected: '+e.gamepad.id,'ok'));
+  gamepadRAF = requestAnimationFrame(poll);
+  res('r-gamepad','Polling gamepads… connect and press a button','info');
+}
+function stopGamepad() { cancelAnimationFrame(gamepadRAF); res('r-gamepad','Stopped','warn'); }
+function testGamepadRumble() {
+  const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+  for (const gp of gps) {
+    if (gp && gp.vibrationActuator) {
+      gp.vibrationActuator.playEffect('dual-rumble', { startDelay:0, duration:500, weakMagnitude:0.5, strongMagnitude:1.0 });
+      res('r-gamepad','✓ Rumble sent!','ok'); return;
+    }
+  }
+  res('r-gamepad','No gamepad with rumble connected','warn');
+}
+function testVirtualKeyboard() {
+  if (!('virtualKeyboard' in navigator)) { res('r-vkeyboard','Not supported','err'); return; }
+  navigator.virtualKeyboard.show();
+  res('r-vkeyboard','✓ Virtual keyboard show() called','ok');
+}
+function hideVirtualKeyboard() {
+  if (!('virtualKeyboard' in navigator)) { res('r-vkeyboard','Not supported','err'); return; }
+  navigator.virtualKeyboard.hide();
+  res('r-vkeyboard','Virtual keyboard hidden','warn');
+}
+function getVKBounds() {
+  if (!('virtualKeyboard' in navigator)) { res('r-vkeyboard','Not supported','err'); return; }
+  const r = navigator.virtualKeyboard.boundingRect;
+  res('r-vkeyboard', `Bounds: ${r.width}×${r.height} @ (${r.x},${r.y})`, 'ok');
+}
+function testKeyboardLock() {
+  if (!navigator.keyboard || !navigator.keyboard.lock) { res('r-kbdlock','Not supported','err'); return; }
+  document.documentElement.requestFullscreen().then(() => {
+    navigator.keyboard.lock(['F1','F2','F11','Escape']).then(() => {
+      res('r-kbdlock','✓ F1,F2,F11,Esc locked — browser shortcuts captured','ok');
+    }).catch(e => res('r-kbdlock','✗ '+e.message,'err'));
+  }).catch(e => res('r-kbdlock','✗ Fullscreen needed: '+e.message,'err'));
+}
+let touchHandlerFn = null;
+function listenTouch() {
+  const area = document.getElementById('touchArea');
+  touchHandlerFn = e => {
+    e.preventDefault();
+    const t = e.touches[0] || e.changedTouches[0];
+    if (t) res('r-touch', `${e.type} | x=${t.clientX.toFixed(0)} y=${t.clientY.toFixed(0)} | ${e.touches.length} touch(es)`, 'ok');
+  };
+  ['touchstart','touchmove','touchend'].forEach(ev => area.addEventListener(ev, touchHandlerFn, {passive:false}));
+  area.addEventListener('click', touchHandlerFn);
+  res('r-touch','Listening for touch events…','info');
+}
+function stopTouch() {
+  const area = document.getElementById('touchArea');
+  if (touchHandlerFn) ['touchstart','touchmove','touchend','click'].forEach(ev => area.removeEventListener(ev, touchHandlerFn));
+  res('r-touch','Stopped','warn');
+}
+let pointerHandlerFn = null;
+function listenPointer() {
+  const area = document.getElementById('pointerArea');
+  pointerHandlerFn = e => {
+    res('r-pointer', `${e.type} | type=${e.pointerType} x=${e.clientX.toFixed(0)} y=${e.clientY.toFixed(0)} pressure=${e.pressure.toFixed(2)} tiltX=${e.tiltX}`, 'ok');
+  };
+  ['pointermove','pointerdown','pointerup'].forEach(ev => area.addEventListener(ev, pointerHandlerFn));
+  res('r-pointer','Listening for pointer events…','info');
+}
+function stopPointerEvents() {
+  const area = document.getElementById('pointerArea');
+  if (pointerHandlerFn) ['pointermove','pointerdown','pointerup'].forEach(ev => area.removeEventListener(ev, pointerHandlerFn));
+  res('r-pointer','Stopped','warn');
+}
+function testEyeDropper() {
+  if (!('EyeDropper' in window)) { res('r-eyedropper','Not supported (Chrome/Edge 95+)','err'); return; }
+  const ed = new EyeDropper();
+  ed.open().then(r => {
+    document.getElementById('r-eyedropper').style.background = r.sRGBHex;
+    document.getElementById('r-eyedropper').textContent = `✓ Picked: ${r.sRGBHex}`;
+    document.getElementById('r-eyedropper').className = 'result ok';
+  }).catch(e => res('r-eyedropper','✗ '+e.message,'err'));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 5. CONNECTIVITY
+// ═══════════════════════════════════════════════════════════════
+
+function testBluetooth() {
+  if (!('bluetooth' in navigator)) { res('r-bluetooth','Not supported','err'); return; }
+  navigator.bluetooth.requestDevice({ acceptAllDevices: true }).then(d => {
+    res('r-bluetooth','✓ BLE Device: '+d.name+' (id: '+d.id+')','ok');
+  }).catch(e => res('r-bluetooth','✗ '+e.message,'err'));
+}
+function testWebUSB() {
+  if (!('usb' in navigator)) { res('r-webusb','Not supported','err'); return; }
+  navigator.usb.requestDevice({ filters: [] }).then(d => {
+    res('r-webusb','✓ USB Device: '+d.productName+' | vendor:0x'+d.vendorId.toString(16),'ok');
+  }).catch(e => res('r-webusb','✗ '+e.message,'err'));
+}
+function testWebHID() {
+  if (!('hid' in navigator)) { res('r-webhid','Not supported','err'); return; }
+  navigator.hid.requestDevice({ filters: [] }).then(devices => {
+    if (devices.length) res('r-webhid','✓ HID Device: '+devices[0].productName,'ok');
+    else res('r-webhid','No device selected','warn');
+  }).catch(e => res('r-webhid','✗ '+e.message,'err'));
+}
+function testWebSerial() {
+  if (!('serial' in navigator)) { res('r-webserial','Not supported','err'); return; }
+  navigator.serial.requestPort({}).then(port => {
+    const info = port.getInfo();
+    res('r-webserial','✓ Serial port selected | vendor:0x'+info.usbVendorId?.toString(16),'ok');
+  }).catch(e => res('r-webserial','✗ '+e.message,'err'));
+}
+function testNFC() {
+  if (!('NDEFReader' in window)) { res('r-nfc','Not supported (Android Chrome only)','err'); return; }
+  nfcReader = new NDEFReader();
+  nfcReader.scan().then(() => {
+    res('r-nfc','📡 NFC scanning… tap an NFC tag','info');
+    nfcReader.onreading = e => {
+      const dec = new TextDecoder();
+      const recs = e.message.records.map(r => dec.decode(r.data)).join(', ');
+      res('r-nfc','✓ NFC read: '+recs,'ok');
+    };
+  }).catch(e => res('r-nfc','✗ '+e.message,'err'));
+}
+function writeNFC() {
+  if (!('NDEFReader' in window)) { res('r-nfc','Not supported','err'); return; }
+  const writer = new NDEFReader();
+  writer.write({ records: [{ recordType:'text', data:'Hello from Web NFC!' }] })
+    .then(() => res('r-nfc','✓ NFC tag written!','ok'))
+    .catch(e => res('r-nfc','✗ '+e.message,'err'));
+}
+function stopNFC() { if(nfcReader){nfcReader.onreading=null;res('r-nfc','Stopped','warn');} }
+function readNetworkInfo() {
+  const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (!c) { res('r-network','Not supported','err'); return; }
+  res('r-network',`type=${c.type||'?'} | effectiveType=${c.effectiveType} | downlink=${c.downlink}Mbps | rtt=${c.rtt}ms | saveData=${c.saveData}`,'ok');
+}
+function watchNetwork() {
+  const c = navigator.connection || navigator.mozConnection;
+  if (!c) { res('r-network','Not supported','err'); return; }
+  netChangeHandler = () => readNetworkInfo();
+  c.addEventListener('change', netChangeHandler);
+  res('r-network','Watching network changes…','info');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 6. CAMERA & MEDIA
+// ═══════════════════════════════════════════════════════════════
+
+async function startCamera(facing) {
+  try {
+    if (camStream) camStream.getTracks().forEach(t=>t.stop());
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facing }, audio: false });
+    const v = document.getElementById('camVideo');
+    v.srcObject = camStream; v.style.display = 'block';
+    res('r-camera','✓ Camera active ('+facing+')','ok');
+  } catch(e) { res('r-camera','✗ '+e.message,'err'); }
+}
+function stopCamera() {
+  if (camStream) { camStream.getTracks().forEach(t=>t.stop()); camStream = null; }
+  const v = document.getElementById('camVideo'); v.srcObject=null; v.style.display='none';
+  res('r-camera','Camera stopped','warn');
+}
+async function startMic() {
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const ac = new (window.AudioContext||window.webkitAudioContext)();
+    const src = ac.createMediaStreamSource(micStream);
+    const analyser = ac.createAnalyser(); analyser.fftSize = 256;
+    src.connect(analyser);
+    const canvas = document.getElementById('micCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.style.display = 'block';
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    (function draw() {
+      if (!micStream) return;
+      requestAnimationFrame(draw);
+      analyser.getByteTimeDomainData(data);
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.strokeStyle='#3fb950'; ctx.lineWidth=2; ctx.beginPath();
+      data.forEach((v,i) => {
+        const x=i*(canvas.width/data.length), y=(v/128)*canvas.height/2;
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }); ctx.stroke();
+    })();
+    res('r-mic','✓ Microphone active — waveform rendering','ok');
+  } catch(e) { res('r-mic','✗ '+e.message,'err'); }
+}
+function stopMic() {
+  if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null;}
+  document.getElementById('micCanvas').style.display='none';
+  res('r-mic','Microphone stopped','warn');
+}
+async function startScreenCapture() {
+  try {
+    if (screenStream) screenStream.getTracks().forEach(t=>t.stop());
+    screenStream = await navigator.mediaDevices.getDisplayMedia({ video:true, audio:true });
+    const v = document.getElementById('screenVideo');
+    v.srcObject = screenStream; v.style.display='block';
+    screenStream.getTracks()[0].onended = () => { v.style.display='none'; res('r-screencap','Capture ended','warn'); };
+    res('r-screencap','✓ Screen capture active','ok');
+  } catch(e) { res('r-screencap','✗ '+e.message,'err'); }
+}
+function stopScreenCapture() {
+  if(screenStream){screenStream.getTracks().forEach(t=>t.stop());screenStream=null;}
+  document.getElementById('screenVideo').style.display='none';
+  res('r-screencap','Stopped','warn');
+}
+function startRecording() {
+  const stream = camStream || screenStream;
+  if(!stream){res('r-recorder','Start camera or screen capture first','warn');return;}
+  recordedChunks=[];
+  mediaRecorder = new MediaRecorder(stream);
+  mediaRecorder.ondataavailable = e => { if(e.data.size>0) recordedChunks.push(e.data); };
+  mediaRecorder.start(100);
+  res('r-recorder','🔴 Recording… click Stop to save','ok');
+}
+function stopRecording() {
+  if(!mediaRecorder){res('r-recorder','Not recording','warn');return;}
+  mediaRecorder.stop();
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(recordedChunks, {type:'video/webm'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href=url; a.download='recording.webm'; a.click();
+    res('r-recorder','✓ Recording saved! ('+Math.round(blob.size/1024)+'KB)','ok');
+  };
+}
+function takePhoto() {
+  if(!camStream){res('r-imagecap','Start camera first','warn');return;}
+  const track = camStream.getVideoTracks()[0];
+  if(!('ImageCapture' in window)){res('r-imagecap','ImageCapture not supported — using canvas','warn');grabFrame();return;}
+  const ic = new ImageCapture(track);
+  ic.takePhoto().then(blob => {
+    const url=URL.createObjectURL(blob);
+    document.getElementById('r-imagecap').innerHTML=`<img src="${url}" style="max-width:100%;max-height:120px">`;
+    res('r-imagecap','✓ Photo captured ('+Math.round(blob.size/1024)+'KB)','ok');
+  }).catch(e=>res('r-imagecap','✗ '+e.message,'err'));
+}
+function grabFrame() {
+  if(!camStream){res('r-imagecap','Start camera first','warn');return;}
+  const v = document.getElementById('camVideo');
+  const c = document.createElement('canvas');
+  c.width=v.videoWidth; c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0);
+  document.getElementById('r-imagecap').innerHTML=`<img src="${c.toDataURL()}" style="max-width:100%;max-height:120px">`;
+}
+async function getCameraCapabilities() {
+  if(!camStream){res('r-imagecap','Start camera first','warn');return;}
+  const track = camStream.getVideoTracks()[0];
+  const caps = track.getCapabilities ? track.getCapabilities() : {};
+  const settings = track.getSettings ? track.getSettings() : {};
+  res('r-imagecap', `Res:${settings.width}x${settings.height} | FacingMode:${settings.facingMode||'?'} | FPS:${settings.frameRate}`, 'ok');
+}
+async function testBarcodeDetect() {
+  if(typeof BarcodeDetector==='undefined'){res('r-barcode','Not supported','err');return;}
+  if(!camStream){res('r-barcode','Start camera first','warn');return;}
+  const bd = new BarcodeDetector({ formats: BarcodeDetector.getSupportedFormats ? await BarcodeDetector.getSupportedFormats() : ['qr_code'] });
+  const v = document.getElementById('camVideo');
+  const detect = async () => {
+    try {
+      const barcodes = await bd.detect(v);
+      if(barcodes.length) res('r-barcode','✓ Barcode: '+barcodes[0].rawValue+' ('+barcodes[0].format+')','ok');
+      else requestAnimationFrame(detect);
+    } catch(e) { res('r-barcode','✗ '+e.message,'err'); }
+  };
+  requestAnimationFrame(detect);
+  res('r-barcode','Scanning for barcodes/QR…','info');
+}
+async function testFaceDetect() {
+  if(typeof FaceDetector==='undefined'){res('r-face','Not supported (Chrome with flag)','err');return;}
+  if(!camStream){res('r-face','Start camera first','warn');return;}
+  const fd = new FaceDetector({ maxDetectedFaces:5, fastMode:true });
+  const v = document.getElementById('camVideo');
+  try {
+    const faces = await fd.detect(v);
+    res('r-face', faces.length ? `✓ ${faces.length} face(s) detected` : 'No faces detected', faces.length?'ok':'warn');
+  } catch(e) { res('r-face','✗ '+e.message,'err'); }
+}
+async function testTextDetect() {
+  if(typeof TextDetector==='undefined'){res('r-textdetect','Not supported (Chrome/Android)','err');return;}
+  if(!camStream){res('r-textdetect','Start camera first','warn');return;}
+  const td = new TextDetector();
+  const v = document.getElementById('camVideo');
+  const detect = async () => {
+    try {
+      const texts = await td.detect(v);
+      if(texts.length) res('r-textdetect','✓ Text: '+texts.map(t=>t.rawValue).join(' | '),'ok');
+      else { res('r-textdetect','Scanning for text…','info'); requestAnimationFrame(detect); }
+    } catch(e) { res('r-textdetect','✗ '+e.message,'err'); }
+  };
+  requestAnimationFrame(detect);
+  res('r-textdetect','Scanning for text in camera feed…','info');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 7. SYSTEM INFO
+// ═══════════════════════════════════════════════════════════════
+
+async function getBatteryInfo() {
+  try {
+    const b = await navigator.getBattery();
+    res('r-battery', `Level: ${(b.level*100).toFixed(0)}% | Charging: ${b.charging} | TimeToFull: ${b.chargingTime}s | TimeToEmpty: ${b.dischargingTime}s`, 'ok');
+  } catch(e) { res('r-battery','✗ '+e.message,'err'); }
+}
+async function watchBattery() {
+  try {
+    const b = await navigator.getBattery();
+    b.addEventListener('chargingchange', () => res('r-battery','⚡ Charging changed: '+b.charging,'info'));
+    b.addEventListener('levelchange', () => res('r-battery','🔋 Level: '+(b.level*100).toFixed(0)+'%','ok'));
+    res('r-battery','Watching battery…','info');
+  } catch(e) { res('r-battery','✗ '+e.message,'err'); }
+}
+async function checkStorage() {
+  if(!navigator.storage){res('r-storage','Not supported','err');return;}
+  const est = await navigator.storage.estimate();
+  const used = (est.usage/1024/1024).toFixed(2);
+  const quota = (est.quota/1024/1024).toFixed(2);
+  const isPersist = await navigator.storage.persisted();
+  res('r-storage', `Used: ${used}MB / ${quota}MB | Persistent: ${isPersist}`, 'ok');
+}
+async function requestPersistentStorage() {
+  if(!navigator.storage){res('r-storage','Not supported','err');return;}
+  const result = await navigator.storage.persist();
+  res('r-storage', result ? '✓ Persistent storage granted' : 'Persistent storage denied', result?'ok':'warn');
+}
+function readPerformance() {
+  const p = performance;
+  const nav = performance.getEntriesByType('navigation')[0];
+  const mem = performance.memory;
+  let msg = `Now: ${p.now().toFixed(2)}ms`;
+  if(nav) msg += ` | DOMLoad: ${nav.domContentLoadedEventEnd.toFixed(0)}ms | Load: ${nav.loadEventEnd.toFixed(0)}ms`;
+  if(mem) msg += ` | JS Heap: ${(mem.usedJSHeapSize/1024/1024).toFixed(1)}MB / ${(mem.jsHeapSizeLimit/1024/1024).toFixed(0)}MB`;
+  res('r-perf', msg, 'ok');
+}
+function measureTiming() {
+  performance.mark('start');
+  let sum = 0;
+  for(let i=0;i<1e6;i++) sum+=Math.sqrt(i);
+  performance.mark('end');
+  performance.measure('test','start','end');
+  const dur = performance.getEntriesByName('test')[0].duration;
+  res('r-perf', `✓ 1M sqrt operations: ${dur.toFixed(2)}ms`, 'ok');
+}
+function testComputePressure() {
+  if(typeof PressureObserver==='undefined'){res('r-pressure','Not supported (Chrome 125+)','err');return;}
+  try {
+    pressureObserver = new PressureObserver(records => {
+      const r = records[records.length-1];
+      res('r-pressure', `CPU: ${r.state} | timestamp: ${r.time.toFixed(0)}ms`, 'ok');
+    });
+    pressureObserver.observe('cpu', { sampleInterval: 1000 });
+    res('r-pressure','Monitoring CPU pressure…','info');
+  } catch(e) { res('r-pressure','✗ '+e.message,'err'); }
+}
+function stopComputePressure() {
+  if(pressureObserver){pressureObserver.unobserve('cpu');pressureObserver=null;res('r-pressure','Stopped','warn');}
+}
+function testDevicePosture() {
+  if(!('devicePosture' in navigator)){res('r-posture','Not supported (foldable devices)','err');return;}
+  const p = navigator.devicePosture;
+  res('r-posture','✓ Device posture: '+p.type,'ok');
+  p.addEventListener('change', () => res('r-posture','Changed → '+p.type,'info'));
+}
+async function testWebGPU() {
+  if(!('gpu' in navigator)){res('r-webgpu','Not supported (Chrome 113+)','err');return;}
+  try {
+    const adapter = await navigator.gpu.requestAdapter();
+    if(!adapter){res('r-webgpu','No GPU adapter available','warn');return;}
+    const device = await adapter.requestDevice();
+    const info = await adapter.requestAdapterInfo();
+    res('r-webgpu','✓ GPU: '+info.description+' | arch: '+info.architecture,'ok');
+  } catch(e) { res('r-webgpu','✗ '+e.message,'err'); }
+}
+async function runGPUCompute() {
+  if(!('gpu' in navigator)){res('r-webgpu','Not supported','err');return;}
+  try {
+    const adapter = await navigator.gpu.requestAdapter();
+    const device = await adapter.requestDevice();
+    const shader = device.createShaderModule({code:`
+      @group(0) @binding(0) var<storage, read_write> data: array<f32>;
+      @compute @workgroup_size(64)
+      fn main(@builtin(global_invocation_id) id: vec3u) {
+        let i = id.x;
+        if (i < arrayLength(&data)) { data[i] = data[i] * 2.0; }
+      }
+    `});
+    const N = 1024;
+    const arr = new Float32Array(N).fill(1.0);
+    const buf = device.createBuffer({ size: arr.byteLength, usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST });
+    device.queue.writeBuffer(buf, 0, arr);
+    const pl = device.createComputePipeline({ layout:'auto', compute:{ module:shader, entryPoint:'main' }});
+    const bg = device.createBindGroup({ layout:pl.getBindGroupLayout(0), entries:[{binding:0, resource:{buffer:buf}}]});
+    const enc = device.createCommandEncoder();
+    const pass = enc.beginComputePass(); pass.setPipeline(pl); pass.setBindGroup(0,bg); pass.dispatchWorkgroups(Math.ceil(N/64)); pass.end();
+    const readBuf = device.createBuffer({ size: arr.byteLength, usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST });
+    enc.copyBufferToBuffer(buf, 0, readBuf, 0, arr.byteLength);
+    device.queue.submit([enc.finish()]);
+    await readBuf.mapAsync(GPUMapMode.READ);
+    const result = new Float32Array(readBuf.getMappedRange());
+    res('r-webgpu', `✓ GPU Compute ran! First 3 results: [${result[0]}, ${result[1]}, ${result[2]}] (each 1.0→2.0)`, 'ok');
+    readBuf.unmap();
+  } catch(e) { res('r-webgpu','✗ '+e.message,'err'); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 8. STORAGE & FILES
+// ═══════════════════════════════════════════════════════════════
+
+async function openFile() {
+  if(!('showOpenFilePicker' in window)){res('r-fsopen','Not supported (Chrome/Edge)','err');return;}
+  try {
+    const [fh] = await window.showOpenFilePicker();
+    const file = await fh.getFile();
+    const text = await file.text();
+    res('r-fsopen', `✓ Opened: ${file.name} (${file.size}B) | Start: "${text.slice(0,50)}"`, 'ok');
+  } catch(e) { res('r-fsopen','✗ '+e.message,'err'); }
+}
+async function saveFile() {
+  if(!('showSaveFilePicker' in window)){res('r-fssave','Not supported','err');return;}
+  try {
+    const fh = await window.showSaveFilePicker({ suggestedName:'web-api-test.txt', types:[{description:'Text',accept:{'text/plain':['.txt']}}] });
+    const writable = await fh.createWritable();
+    await writable.write(document.getElementById('saveContent').value);
+    await writable.close();
+    res('r-fssave','✓ File saved to disk via native Save dialog','ok');
+  } catch(e) { res('r-fssave','✗ '+e.message,'err'); }
+}
+async function testOPFS() {
+  try {
+    const root = await navigator.storage.getDirectory();
+    const fh = await root.getFileHandle('test.txt', { create:true });
+    const wr = await fh.createWritable();
+    await wr.write('OPFS test content ' + Date.now());
+    await wr.close();
+    const rf = await fh.getFile();
+    const text = await rf.text();
+    res('r-opfs', '✓ OPFS write+read: "'+text+'"', 'ok');
+  } catch(e) { res('r-opfs','✗ '+e.message,'err'); }
+}
+async function writeClipboard() {
+  try {
+    await navigator.clipboard.writeText(document.getElementById('clipText').value);
+    res('r-clipwrite','✓ Text copied to system clipboard!','ok');
+  } catch(e) { res('r-clipwrite','✗ '+e.message,'err'); }
+}
+async function writeClipboardImage() {
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width=100; canvas.height=100;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle='#58a6ff'; ctx.fillRect(0,0,100,100);
+    ctx.fillStyle='white'; ctx.font='16px sans-serif'; ctx.fillText('WEB API',10,55);
+    canvas.toBlob(async blob => {
+      await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+      res('r-clipwrite','✓ Image copied to clipboard!','ok');
+    },'image/png');
+  } catch(e) { res('r-clipwrite','✗ '+e.message,'err'); }
+}
+async function readClipboard() {
+  try {
+    const text = await navigator.clipboard.readText();
+    res('r-clipread','✓ Clipboard: "'+text.slice(0,80)+'"','ok');
+  } catch(e) { res('r-clipread','✗ '+e.message+' (needs clipboard-read permission)','err'); }
+}
+async function pickContacts() {
+  if(!('contacts' in navigator)){res('r-contacts','Not supported (Android/iOS only)','err');return;}
+  try {
+    const contacts = await navigator.contacts.select(['name','email','tel'],{multiple:true});
+    if(contacts.length) res('r-contacts','✓ '+JSON.stringify(contacts[0]),'ok');
+    else res('r-contacts','No contacts selected','warn');
+  } catch(e) { res('r-contacts','✗ '+e.message,'err'); }
+}
+async function queryLocalFontsAPI() {
+  if(!('queryLocalFonts' in window)){res('r-fonts','Not supported (Chrome 103+)','err');return;}
+  try {
+    const fonts = await window.queryLocalFonts();
+    res('r-fonts', `✓ ${fonts.length} local fonts | First 5: ${fonts.slice(0,5).map(f=>f.family).join(', ')}`, 'ok');
+  } catch(e) { res('r-fonts','✗ '+e.message,'err'); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 9. NETWORK & NOTIFICATIONS
+// ═══════════════════════════════════════════════════════════════
+
+async function sendNotification() {
+  if(!('Notification' in window)){res('r-notif','Not supported','err');return;}
+  const p = await Notification.requestPermission();
+  if(p!=='granted'){res('r-notif','Permission denied','err');return;}
+  const n = new Notification(document.getElementById('notifTitle').value, {
+    body: document.getElementById('notifBody').value,
+    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🔌</text></svg>'
+  });
+  n.onclick = () => log('Notification clicked!');
+  res('r-notif','✓ Notification sent! Check your OS notification area','ok');
+}
+async function webShare() {
+  if(!('share' in navigator)){res('r-share','Not supported','err');return;}
+  try {
+    await navigator.share({ title:'Device Web APIs', text:'Check out all the Web APIs!', url:window.location.href });
+    res('r-share','✓ Share sheet opened','ok');
+  } catch(e) { res('r-share', e.name==='AbortError'?'Share cancelled':'✗ '+e.message, e.name==='AbortError'?'warn':'err'); }
+}
+async function webShareFile() {
+  if(!navigator.canShare){res('r-share','File sharing not supported','err');return;}
+  try {
+    const blob = new Blob(['Web API test file'], {type:'text/plain'});
+    const file = new File([blob], 'test.txt', {type:'text/plain'});
+    if(!navigator.canShare({files:[file]})){res('r-share','File sharing not allowed','warn');return;}
+    await navigator.share({ files:[file], title:'Test File' });
+    res('r-share','✓ File share sheet opened','ok');
+  } catch(e) { res('r-share','✗ '+e.message,'err'); }
+}
+async function testPushAPI() {
+  if(!('serviceWorker' in navigator)||!('PushManager' in window)){res('r-push','Not supported','err');return;}
+  try {
+    const reg = await navigator.serviceWorker.register('#',{scope:'/'}).catch(()=>navigator.serviceWorker.ready);
+    const perm = await Notification.requestPermission();
+    if(perm!=='granted'){res('r-push','Notification permission denied — needed for push','err');return;}
+    res('r-push','✓ Push API available | SW registered | Note: Full push needs a server to send VAPID messages','ok');
+  } catch(e) { res('r-push','✗ '+e.message,'err'); }
+}
+async function testBackgroundSync() {
+  if(!('serviceWorker' in navigator)){res('r-bgsync','Service Worker not supported','err');return;}
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    if(!reg.sync){res('r-bgsync','Background Sync not supported','err');return;}
+    await reg.sync.register('my-sync-tag');
+    res('r-bgsync','✓ Background sync "my-sync-tag" registered — will fire when online','ok');
+  } catch(e) { res('r-bgsync','✗ '+e.message,'err'); }
+}
+async function testPeriodicSync() {
+  if(!('serviceWorker' in navigator)){res('r-pbgsync','Not supported','err');return;}
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    if(!reg.periodicSync){res('r-pbgsync','Periodic Background Sync not supported','err');return;}
+    const perm = await navigator.permissions.query({name:'periodic-background-sync'});
+    if(perm.state!=='granted'){res('r-pbgsync','periodic-background-sync permission: '+perm.state,'warn');return;}
+    await reg.periodicSync.register('news-update',{minInterval: 24*60*60*1000});
+    res('r-pbgsync','✓ Periodic sync registered (every 24h)','ok');
+  } catch(e) { res('r-pbgsync','✗ '+e.message,'err'); }
+}
+async function testWebXR() {
+  if(!('xr' in navigator)){res('r-webxr','Not supported','err');return;}
+  const vr = await navigator.xr.isSessionSupported('immersive-vr');
+  const ar = await navigator.xr.isSessionSupported('immersive-ar');
+  const inline = await navigator.xr.isSessionSupported('inline');
+  res('r-webxr', `VR: ${vr} | AR: ${ar} | Inline: ${inline}`, (vr||ar)?'ok':'warn');
+}
+async function startXRSession() {
+  if(!('xr' in navigator)){res('r-webxr','Not supported','err');return;}
+  try {
+    const session = await navigator.xr.requestSession('immersive-vr');
+    session.end();
+    res('r-webxr','✓ VR session started and ended','ok');
+  } catch(e) { res('r-webxr','✗ '+e.message,'err'); }
+}
+async function startIdleDetect() {
+  if(typeof IdleDetector==='undefined'){res('r-idle','Not supported (Chrome 94+)','err');return;}
+  try {
+    const perm = await IdleDetector.requestPermission();
+    if(perm!=='granted'){res('r-idle','Permission denied','err');return;}
+    idleDetector = new IdleDetector();
+    idleDetector.addEventListener('change', () => {
+      res('r-idle', `User: ${idleDetector.userState} | Screen: ${idleDetector.screenState}`, 'ok');
+    });
+    await idleDetector.start({ threshold: 60000 });
+    res('r-idle','✓ Idle detection active (threshold: 60s)','info');
+  } catch(e) { res('r-idle','✗ '+e.message,'err'); }
+}
+function stopIdleDetect() {
+  if(idleDetector){idleDetector.abort();idleDetector=null;res('r-idle','Stopped','warn');}
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 10. ADVANCED / EXPERIMENTAL
+// ═══════════════════════════════════════════════════════════════
+
+async function testPaymentRequest() {
+  if(typeof PaymentRequest==='undefined'){res('r-payment','Not supported','err');return;}
+  try {
+    const req = new PaymentRequest(
+      [{ supportedMethods: 'basic-card', data: { supportedNetworks:['visa','mastercard'] }}],
+      { total: { label:'Test Item', amount:{ currency:'USD', value:'1.00' }} }
+    );
+    const canMake = await req.canMakePayment();
+    if(!canMake){res('r-payment','No payment methods available in browser','warn');return;}
+    const response = await req.show();
+    await response.complete('success');
+    res('r-payment','✓ Payment completed!','ok');
+  } catch(e) { res('r-payment', e.name==='AbortError'?'Payment cancelled':'✗ '+e.message, e.name==='AbortError'?'warn':'err'); }
+}
+async function testCredentials() {
+  if(!('credentials' in navigator)){res('r-creds','Not supported','err');return;}
+  try {
+    const cred = await navigator.credentials.get({ password:true, mediation:'optional' });
+    if(cred) res('r-creds','✓ Credential found: '+cred.id,'ok');
+    else res('r-creds','No saved credentials found in password manager','warn');
+  } catch(e) { res('r-creds','✗ '+e.message,'err'); }
+}
+async function testWebAuthn() {
+  if(!window.PublicKeyCredential){res('r-creds','WebAuthn not supported','err');return;}
+  try {
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+    const userId = crypto.getRandomValues(new Uint8Array(16));
+    const cred = await navigator.credentials.create({
+      publicKey: {
+        challenge, rp:{name:'Device API Test', id:location.hostname||'localhost'},
+        user:{id:userId, name:'test@test.com', displayName:'Test User'},
+        pubKeyCredParams:[{alg:-7,type:'public-key'},{alg:-257,type:'public-key'}],
+        authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required'},
+        timeout:30000
+      }
+    });
+    res('r-creds', '✓ Passkey created! ID: '+btoa(String.fromCharCode(...new Uint8Array(cred.rawId))).slice(0,20)+'…','ok');
+  } catch(e) { res('r-creds','✗ WebAuthn: '+e.message,'err'); }
+}
+function testInkAPI() {
+  if(!('ink' in navigator)){res('r-ink','Not supported (Windows/Surface, Chrome 94+)','err');return;}
+  navigator.ink.requestPresenter({presentationArea:document.getElementById('inkCanvas')})
+    .then(presenter => res('r-ink','✓ Ink presenter acquired — stylus latency minimized','ok'))
+    .catch(e => res('r-ink','✗ '+e.message,'err'));
+}
+async function testWebLocks() {
+  if(!navigator.locks){res('r-locks','Not supported','err');return;}
+  res('r-locks','Acquiring lock "api-test"…','info');
+  await navigator.locks.request('api-test', async lock => {
+    res('r-locks','✓ Lock held: '+lock.name+' ('+lock.mode+')','ok');
+    await new Promise(r => setTimeout(r, 1000));
+    res('r-locks','✓ Lock released after 1s','ok');
+  });
+}
+async function queryLocks() {
+  if(!navigator.locks){res('r-locks','Not supported','err');return;}
+  const state = await navigator.locks.query();
+  res('r-locks', `Held: ${state.held.length} | Pending: ${state.pending.length}`, 'ok');
+}
+async function testStorageAccess() {
+  if(!('requestStorageAccess' in document)){res('r-storageaccess','Not supported','err');return;}
+  try {
+    await document.requestStorageAccess();
+    res('r-storageaccess','✓ Storage access granted','ok');
+  } catch(e) { res('r-storageaccess','✗ '+e.message,'err'); }
+}
+async function checkStorageAccess() {
+  if(!('hasStorageAccess' in document)){res('r-storageaccess','Not supported','err');return;}
+  const has = await document.hasStorageAccess();
+  res('r-storageaccess', 'Has storage access: '+has, has?'ok':'warn');
+}
+async function testCookieStore() {
+  if(!('cookieStore' in window)){res('r-cookiestore','Not supported (Chrome/Edge)','err');return;}
+  try {
+    await cookieStore.set({ name:'web-api-test', value:'hello-'+Date.now(), expires: Date.now()+3600000 });
+    res('r-cookiestore','✓ Cookie written via CookieStore API','ok');
+  } catch(e) { res('r-cookiestore','✗ '+e.message,'err'); }
+}
+async function readCookieStore() {
+  if(!('cookieStore' in window)){res('r-cookiestore','Not supported','err');return;}
+  try {
+    const cookies = await cookieStore.getAll();
+    res('r-cookiestore', `✓ ${cookies.length} cookie(s): ${cookies.map(c=>c.name+'='+c.value.slice(0,10)).join(', ')}`, 'ok');
+  } catch(e) { res('r-cookiestore','✗ '+e.message,'err'); }
+}
+function watchCookieStore() {
+  if(!('cookieStore' in window)){res('r-cookiestore','Not supported','err');return;}
+  cookieStore.addEventListener('change', e => {
+    res('r-cookiestore', `Cookie changed: ${e.changed.map(c=>c.name).join(',')} deleted: ${e.deleted.map(c=>c.name).join(',')}`, 'info');
+  });
+  res('r-cookiestore','Watching cookie changes…','info');
+}
+async function testBackgroundFetch() {
+  if(!('serviceWorker' in navigator)){res('r-bgfetch','Service Worker not supported','err');return;}
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    if(!reg.backgroundFetch){res('r-bgfetch','Background Fetch API not supported (Chrome 74+)','err');return;}
+    const bgFetch = await reg.backgroundFetch.fetch('my-fetch', ['https://httpbin.org/get'], {
+      title: 'Background Fetch Demo',
+      downloadTotal: 1024
+    });
+    bgFetch.addEventListener('progress', () => {
+      res('r-bgfetch', `Fetching… ${bgFetch.downloaded}/${bgFetch.downloadTotal} bytes`, 'info');
+    });
+    bgFetch.addEventListener('success', () => res('r-bgfetch','✓ Background fetch complete!','ok'));
+    bgFetch.addEventListener('fail', () => res('r-bgfetch','Fetch failed','err'));
+    res('r-bgfetch','✓ Background fetch started — check OS download UI','ok');
+  } catch(e) { res('r-bgfetch','✗ '+e.message,'err'); }
+}
+async function testContentIndex() {
+  if(!('serviceWorker' in navigator)){res('r-contentindex','Not supported','err');return;}
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    if(!reg.index){res('r-contentindex','Content Index API not supported','err');return;}
+    await reg.index.add({ id:'api-demo', title:'Device Web APIs Demo', description:'All device APIs', url:location.href, category:'article' });
+    res('r-contentindex','✓ Content indexed in device offline content list','ok');
+  } catch(e) { res('r-contentindex','✗ '+e.message,'err'); }
+}
+function testNavigationAPI() {
+  if(!window.navigation){res('r-navapi','Not supported (Chrome 102+)','err');return;}
+  const entry = navigation.currentEntry;
+  res('r-navapi', `✓ URL: ${entry.url} | Key: ${entry.key} | Index: ${entry.index}`, 'ok');
+}
+function listenNavigation() {
+  if(!window.navigation){res('r-navapi','Not supported','err');return;}
+  navigation.addEventListener('navigate', e => {
+    res('r-navapi', `Navigation → ${e.destination.url} | canIntercept: ${e.canIntercept}`, 'info');
+  });
+  res('r-navapi','Listening for navigations… navigate to test','info');
+}
+async function testScheduler() {
+  if(!('scheduler' in window)){res('r-scheduler','Not supported (Chrome 94+)','err');return;}
+  const results = [];
+  const t = () => performance.now().toFixed(1);
+  scheduler.postTask(() => results.push('background @'+t()), { priority:'background' });
+  scheduler.postTask(() => results.push('user-visible @'+t()), { priority:'user-visible' });
+  scheduler.postTask(() => results.push('user-blocking @'+t()), { priority:'user-blocking' });
+  await new Promise(r => setTimeout(r, 100));
+  res('r-scheduler', '✓ Task order (high→low priority): '+results.join(' → '), 'ok');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+
+window.addEventListener('DOMContentLoaded', detectSupport);
+</script>
+</body>
+</html>
